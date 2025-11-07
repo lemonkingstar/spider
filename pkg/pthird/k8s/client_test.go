@@ -4,7 +4,7 @@ import "testing"
 
 var (
 	opt = Option{
-		Host:        "https://10.10.10.10:6443",
+		Host:        "https://localhost:6443",
 		BearerToken: "dangerous",
 	}
 )

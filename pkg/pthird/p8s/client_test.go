@@ -2,12 +2,8 @@ package p8s
 
 import "testing"
 
-var (
-	addr = "https://10.10.10.10"
-)
-
 func TestQuery(t *testing.T) {
-	cli, err := NewDefault(addr)
+	cli, err := NewDefault("https://localhost")
 	if err != nil {
 		t.Fatal(err)
 	}

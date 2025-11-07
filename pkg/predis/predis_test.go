@@ -15,7 +15,7 @@ func TestRedisCommand(t *testing.T) {
 
 func MyClient() {
 	client := NewClient(&redis.Options{
-		Addr:     "10.10.6.65:6379",
+		Addr:     "localhost:6379",
 		Password: "",
 		DB:       10,
 	})
@@ -178,7 +178,7 @@ func TestListQueue(t *testing.T) {
 	}
 	cli.LConsume(context.Background(), topic, h)
 	go func() {
-		for i:=0; i<100; i++ {
+		for i := 0; i < 100; i++ {
 			msg := &Message{
 				Topic: topic, Body: []byte(fmt.Sprintf("test message %d", i)),
 			}

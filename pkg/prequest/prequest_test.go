@@ -42,7 +42,7 @@ func TestAddQuery(t *testing.T) {
 }
 
 func TestUploadFile(t *testing.T) {
-	url := "http://10.10.10.10:8000/v1/upload"
+	url := "http://localhost:8000/v1/upload"
 	data := map[string]interface{}{
 		"message": "今天是疯狂星期五",
 	}
@@ -63,7 +63,7 @@ func TestUploadFile(t *testing.T) {
 }
 
 func TestUploadFile2(t *testing.T) {
-	url := "http://10.10.10.10:8000/v1/upload"
+	url := "http://localhost:8000/v1/upload"
 	data := map[string]string{
 		"message": "今天是疯狂星期五",
 	}

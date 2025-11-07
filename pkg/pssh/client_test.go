@@ -7,7 +7,7 @@ import (
 )
 
 var options = &ClientOptions{
-	Host:     "10.10.10.10",
+	Host:     "localhost",
 	Password: "dangerous",
 }
 

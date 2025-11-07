@@ -9,7 +9,7 @@ import (
 
 func TestMater(t *testing.T) {
 	_, err := predis.NewDefault(predis.Config{
-		Address: "10.10.10.10:6379", Database: 0,
+		Address: "localhost:6379", Database: 0,
 	})
 	if err != nil {
 		t.Fatalf("redis init error: %s", err.Error())

@@ -8,7 +8,7 @@ import (
 
 func TestRmq(t *testing.T) {
 	exType, exName, rtKey, quName := "direct", "xxx-exchange", "xxx-key", "xxx-queue"
-	cli, _ := NewDefault("amqp://admin:123456@10.10.10.10:5672/", exType, exName, rtKey, quName)
+	cli, _ := NewDefault("amqp://admin:123456@localhost:5672/", exType, exName, rtKey, quName)
 	defer cli.Close()
 	// 发送消息
 	for i := 0; i < 10; i++ {
@@ -25,7 +25,7 @@ func TestRmq(t *testing.T) {
 
 func TestPeriodicConsume(t *testing.T) {
 	exType, exName, rtKey, quName := "direct", "xxx-exchange", "xxx", "xxx-queue"
-	cli, _ := NewDefault("amqp://admin:123456@10.10.10.10:5672/", exType, exName, rtKey, quName)
+	cli, _ := NewDefault("amqp://admin:123456@localhost:5672/", exType, exName, rtKey, quName)
 	defer cli.Close()
 	// 发送消息
 	go func() {
