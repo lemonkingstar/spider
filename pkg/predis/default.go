@@ -7,10 +7,17 @@ var (
 // Default return the default client
 func Default() Client { return defaultCli }
 
-// NewDefault init the default client
-func NewDefault(cfg Config) (Client, error) {
+// CreateDefault init the default client
+func CreateDefault(cfg Config) (Client, error) {
 	cli, err := New(cfg)
-	if err != nil { return nil, err }
+	if err != nil {
+		return nil, err
+	}
 	defaultCli = cli
 	return cli, nil
+}
+
+// AcquireDefault usual way to acquire client
+func AcquireDefault(addr, pw string, db int) (Client, error) {
+	return CreateDefault(Config{Address: addr, Password: pw, Database: db})
 }

@@ -14,7 +14,7 @@ import (
 	"github.com/lemonkingstar/spider/pkg/plog"
 )
 
-type DBConfig struct {
+type Config struct {
 	DBType      string
 	User        string
 	Password    string
@@ -23,17 +23,18 @@ type DBConfig struct {
 	DBName      string
 	TablePrefix string
 	LogLevel    string
+	Dsn         string // dsn
 
 	MaxIdleConn int
 	MaxOpenConn int
 	MaxLifetime int
 }
 
-func Default(host string, port int, user, password, db string) (*gorm.DB, error) {
-	cfg := &DBConfig{
+func CreateDefault(host string, port int, user, pw, db string) (*gorm.DB, error) {
+	cfg := &Config{
 		DBType:      "mysql",
 		User:        user,
-		Password:    password,
+		Password:    pw,
 		Host:        host,
 		Port:        port,
 		DBName:      db,
@@ -41,16 +42,27 @@ func Default(host string, port int, user, password, db string) (*gorm.DB, error)
 		MaxIdleConn: runtime.NumCPU() * 8,
 		MaxOpenConn: runtime.NumCPU() * 8,
 		MaxLifetime: 30,
-		LogLevel:    "DEBUG",
 	}
 	return cfg.build()
 }
 
-func New(c *DBConfig) (*gorm.DB, error) {
+func AcquireDefault(dsn string) (*gorm.DB, error) {
+	cfg := &Config{
+		DBType:      "mysql",
+		Dsn:         dsn,
+		TablePrefix: "",
+		MaxIdleConn: runtime.NumCPU() * 8,
+		MaxOpenConn: runtime.NumCPU() * 8,
+		MaxLifetime: 30,
+	}
+	return cfg.build()
+}
+
+func New(c *Config) (*gorm.DB, error) {
 	return c.build()
 }
 
-func (c *DBConfig) build() (*gorm.DB, error) {
+func (c *Config) build() (*gorm.DB, error) {
 	var dial gorm.Dialector
 	switch c.DBType {
 	case "mysql":
