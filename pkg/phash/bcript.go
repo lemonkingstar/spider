@@ -8,7 +8,7 @@ func GenerateFromPassword(password string) (string, error) {
 	return string(b), err
 }
 
-// CheckHashAndPassword 输入密码校验
-func CheckHashAndPassword(inputPassword, hashedPassword string) error {
+// VerifyPassword 输入密码校验
+func VerifyPassword(inputPassword, hashedPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(inputPassword))
 }
