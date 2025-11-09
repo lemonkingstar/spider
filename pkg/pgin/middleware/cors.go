@@ -26,7 +26,6 @@ func CORSMiddleware() gin.HandlerFunc {
 			c.Writer.Header().Set("Access-Control-Allow-Methods", "HEAD, GET, POST, DELETE, PUT, OPTIONS")
 
 			if c.Request.Method == http.MethodOptions {
-				// c.Writer.WriteHeader(http.StatusOK)
 				c.AbortWithStatus(http.StatusOK)
 				return
 			}
@@ -35,7 +34,7 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-func Cors(domain string) gin.HandlerFunc {
+func GinCors(domain string) gin.HandlerFunc {
 	var domains = []string{"*"}
 	if domain != "" {
 		domains = strings.Split(domain, ",")
