@@ -64,15 +64,19 @@ func New(c *Config) (*gorm.DB, error) {
 
 func (c *Config) build() (*gorm.DB, error) {
 	var dial gorm.Dialector
+	dsn := c.Dsn
 	switch c.DBType {
 	case "mysql":
-		dial = mysql.Open(fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
-			c.User, c.Password, c.Host, c.Port, c.DBName))
+		if dsn == "" {
+			dsn = fmt.Sprintf("%s:%s@(%s:%d)/%s?charset=utf8&parseTime=True&loc=Local",
+				c.User, c.Password, c.Host, c.Port, c.DBName)
+		}
+		dial = mysql.Open(dsn)
 	default:
 		return nil, fmt.Errorf("unsupported db type: %s", c.DBType)
 	}
 
-	plog.Infof("Build db connection[ %s ]: %s:%d/%s", c.DBType, c.Host, c.Port, c.DBName)
+	plog.Infof("Build db connection[ %s ]: %s", c.DBType, dsn)
 	logLevel := logger.Info
 	if strings.ToUpper(c.LogLevel) == "WARN" {
 		logLevel = logger.Warn
