@@ -1,8 +1,9 @@
 package pencrypt
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 /*
@@ -24,47 +25,23 @@ AES 秘钥的长度只能是16、24 或 32 字节，分别对应三种加密模�
 | AES-192	16				24				12
 | AES-256	16				32				14
 
- */
+*/
 
 const key = "2a08f271128e0f40b63e75e2ad4db451"
 
 func TestAesEncrypt(t *testing.T) {
 	text := "i love china! i love chinese food!"
-	aes := NewAesEncryptor([]byte(text), true)
-	aes.SetKey([]byte(key))
-	b, err := aes.Encrypt()
+	aes, _ := NewAesEncryptor([]byte(key), nil)
+	ciphertext, err := aes.Encrypt([]byte(text))
 	if err != nil {
-		fmt.Println(err)
-		return
+		t.Fatal(err)
 	}
-	fmt.Println(b)
-	fmt.Println(string(b))
+	t.Log(string(ciphertext))
 
-	// to base64
-	str, err := aes.Encrypt2Base64()
+	plaintext, err := aes.Decrypt(ciphertext)
 	if err != nil {
-		fmt.Println(err)
-		return
+		t.Fatal(err)
 	}
-	fmt.Println(str)
-
-	// decrypt
-	aes = NewAesEncryptor(b, false)
-	aes.SetKey([]byte(key))
-	b2, err := aes.Decrypt()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(string(b2))
-
-	// from base64
-	aes = NewAesEncryptor([]byte(str), false)
-	aes.SetKey([]byte(key))
-	b3, err := aes.Decrypt5Base64()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(string(b3))
+	t.Log(string(plaintext))
+	assert.Equal(t, string(plaintext), text)
 }

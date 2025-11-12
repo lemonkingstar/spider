@@ -5,104 +5,101 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
+	"errors"
 )
 
 type AesEncryptor struct {
-	plaintext	[]byte
-	ciphertext	[]byte
-	key 		[]byte
-	iv 			[]byte
-
-	// true: encrypt, false: decrypt
-	encrypt 	bool
+	// Note that key length must be 16, 24 or 32 bytes to select AES-128, AES-192, or AES-256
+	// Note that AES block size is 16 bytes
+	key []byte
+	// Note The length of iv must be the same as the block size
+	iv []byte
 }
 
-func NewAesEncryptor(text []byte, encrypt bool) *AesEncryptor {
-	aes := &AesEncryptor{
-		encrypt: encrypt,
+func NewAesEncryptor(key, iv []byte) (*AesEncryptor, error) {
+	switch len(key) {
+	case 16, 24, 32:
+	default:
+		return nil, errors.New("invalid key length")
 	}
-	if encrypt {
-		aes.plaintext = text
-	} else {
-		aes.ciphertext = text
+
+	if iv != nil && len(iv) != aes.BlockSize {
+		return nil, errors.New("invalid iv length")
 	}
-	return aes
+	return &AesEncryptor{key: key, iv: iv}, nil
 }
 
-// SetKey
-// Note that key length must be 16, 24 or 32 bytes to select AES-128, AES-192, or AES-256
-// Note that AES block size is 16 bytes
-func (p *AesEncryptor) SetKey(key []byte) {
-	p.key = key
-}
-
-// SetCbcIV
-// The length of iv must be the same as the key size
-func (p *AesEncryptor) SetCbcIV(iv []byte) {
-	p.iv = iv
-}
-
-func (p *AesEncryptor) PKCS7Padding(text []byte, blockSize int) []byte {
-	padding := blockSize - len(text) % blockSize
+func (p *AesEncryptor) pkcs7Padding(text []byte, blockSize int) []byte {
+	padding := blockSize - len(text)%blockSize
 	padText := bytes.Repeat([]byte{byte(padding)}, padding)
 	return append(text, padText...)
 }
 
-func (p *AesEncryptor) PKCS7UnPadding(text []byte) []byte {
+func (p *AesEncryptor) pkcs7UnPadding(text []byte) ([]byte, error) {
 	length := len(text)
+	if length == 0 {
+		return nil, errors.New("padding text is nil")
+	}
 	unPadding := int(text[length-1])
-	return text[:(length - unPadding)]
+	return text[:(length - unPadding)], nil
 }
 
 // Encrypt encrypts data with AES algorithm in CBC mode
-func (p *AesEncryptor) Encrypt() ([]byte, error) {
+func (p *AesEncryptor) Encrypt(plaintext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(p.key)
 	if err != nil {
 		return nil, err
 	}
 
 	blockSize := block.BlockSize()
-	plaintext := p.PKCS7Padding(p.plaintext, blockSize)
-	p.ciphertext = make([]byte, len(plaintext))
+	plaintext2 := p.pkcs7Padding(plaintext, blockSize)
+	ciphertext := make([]byte, len(plaintext2))
 	iv := p.key[:blockSize]
-	if len(p.iv) > 0 { iv = p.iv }
+	if len(p.iv) > 0 {
+		iv = p.iv
+	}
 	blockMode := cipher.NewCBCEncrypter(block, iv)
-	blockMode.CryptBlocks(p.ciphertext, plaintext)
-	return p.ciphertext, nil
+	blockMode.CryptBlocks(ciphertext, plaintext2)
+	return ciphertext, nil
 }
 
-// Encrypt2Base64
-// Encrypt to Base64
-func (p *AesEncryptor) Encrypt2Base64() (string, error) {
-	if _, err := p.Encrypt(); err != nil {
+func (p *AesEncryptor) EncryptToBase64(plaintext string) (string, error) {
+	ciphertext, err := p.Encrypt([]byte(plaintext))
+	if err != nil {
 		return "", err
 	}
-	return base64.StdEncoding.EncodeToString(p.ciphertext), nil
+	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
 // Decrypt decrypts cipher text with AES algorithm in CBC mode
-func (p *AesEncryptor) Decrypt() ([]byte, error) {
+func (p *AesEncryptor) Decrypt(ciphertext []byte) ([]byte, error) {
 	block, err := aes.NewCipher(p.key)
 	if err != nil {
 		return nil, err
 	}
 
-	plaintext := make([]byte, len(p.ciphertext))
+	plaintext := make([]byte, len(ciphertext))
 	iv := p.key[:block.BlockSize()]
-	if len(p.iv) > 0 { iv = p.iv }
+	if len(p.iv) > 0 {
+		iv = p.iv
+	}
 	blockMode := cipher.NewCBCDecrypter(block, iv)
-	blockMode.CryptBlocks(plaintext, p.ciphertext)
-	p.plaintext = p.PKCS7UnPadding(plaintext)
-	return p.plaintext, nil
-}
-
-// Decrypt5Base64
-// Decrypt from Base64
-func (p *AesEncryptor) Decrypt5Base64() ([]byte, error) {
-	text, err := base64.StdEncoding.DecodeString(string(p.ciphertext))
+	blockMode.CryptBlocks(plaintext, ciphertext)
+	plaintext2, err := p.pkcs7UnPadding(plaintext)
 	if err != nil {
 		return nil, err
 	}
-	p.ciphertext = text
-	return p.Decrypt()
+	return plaintext2, nil
+}
+
+func (p *AesEncryptor) DecryptFromBase64(ciphertext string) (string, error) {
+	plaintext, err := base64.StdEncoding.DecodeString(ciphertext)
+	if err != nil {
+		return "", err
+	}
+	plaintext2, err := p.Decrypt(plaintext)
+	if err != nil {
+		return "", err
+	}
+	return string(plaintext2), nil
 }
