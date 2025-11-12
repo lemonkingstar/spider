@@ -25,17 +25,16 @@ const (
 	defaultLogFormat       = "[ %p ][ %d ] %m"
 	defaultTimestampFormat = time.RFC3339
 	// 混淆码
-	obfuscatedCode         = "*#06#"
+	obfuscatedCode = "*#06#"
 )
 
 var (
 	logger = logrus.New()
-	logLevels = map[string]logrus.Level{
-		"DEBUG": logrus.DebugLevel,
-		"INFO":  logrus.InfoLevel,
-		"WARN":  logrus.WarnLevel,
-		"ERROR": logrus.ErrorLevel,
-	}
+
+	DebugLevel = logrus.DebugLevel
+	InfoLevel  = logrus.InfoLevel
+	WarnLevel  = logrus.WarnLevel
+	ErrorLevel = logrus.ErrorLevel
 
 	Print  = logger.Print
 	Printf = logger.Printf
@@ -59,36 +58,30 @@ type Entry = logrus.Entry
 func init() {
 	formatter := &StdFormatter{
 		TimestampFormat: "2006-01-02 15:04:05",
-		LogFormat:       "[ %p ][ %d ] %m",
 		LevelTruncation: true,
 	}
 	formatter.Init()
 	logger.SetFormatter(formatter)
-	logger.SetLevel(logrus.InfoLevel)
+	logger.SetLevel(InfoLevel)
 	logger.SetOutput(os.Stdout)
 }
 
 // SetLevel 设置日志等级
-// DEBUG/INFO/WARN/ERROR
-func SetLevel(l string) {
-	level, ok := logLevels[strings.ToUpper(l)]
-	if !ok {
-		level = logLevels["INFO"]
-	}
-	logger.SetLevel(level)
+func SetLevel(l logrus.Level) {
+	logger.SetLevel(l)
 }
 
+// SetOutput 设置默认输出
 func SetOutput(output io.Writer) {
 	logger.SetOutput(output)
 }
 
-// SetReportCaller 启用文件名函数名显示
+// SetReportCaller 打印函数调用信息
 func SetReportCaller(include bool) {
 	logger.SetReportCaller(include)
 }
 
-// SetRotateFile 启用日志文件分割
-// logs/*.log
+// SetRotateFile 启用日志文件分割 logs/*.log
 func SetRotateFile(file string) {
 	rotate := &RotateFileHook{
 		level:     logger.GetLevel(),
@@ -105,31 +98,25 @@ func SetRotateFile(file string) {
 	logger.AddHook(rotate)
 }
 
-func WithField(key string, value interface{}) *Entry {
-	return logger.WithField(key, value)
-}
+func WithField(key string, value interface{}) *Entry { return logger.WithField(key, value) }
 
-func WithFields(fields map[string]interface{}) *Entry {
-	return logger.WithFields(fields)
-}
+func WithFields(fields map[string]interface{}) *Entry { return logger.WithFields(fields) }
 
-func GetLogger() *Logger {
-	return logger
-}
+func GetLogger() *Logger { return logger }
 
 type StdFormatter struct {
-	TimestampFormat        string
-	LogFormat              string
-	LevelTruncation        bool
+	TimestampFormat string
+	LogFormat       string
+	LevelTruncation bool
 
-	logFormat_             string
-	fLevelCode             string
-	fDateCode              string
-	fMessageCode           string
+	formatContent string
+	fLevelCode    string
+	fDateCode     string
+	fMessageCode  string
 }
 
 func (f *StdFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	output := f.logFormat_
+	output := f.formatContent
 	level := strings.ToUpper(entry.Level.String())
 	if f.LevelTruncation {
 		level = level[:4]
@@ -161,9 +148,9 @@ func (f *StdFormatter) Init() {
 	f.fLevelCode = "%p" + obfuscatedCode + "%"
 	f.fDateCode = "%d" + obfuscatedCode + "%"
 	f.fMessageCode = "%m" + obfuscatedCode + "%"
-	f.logFormat_ = strings.ReplaceAll(f.LogFormat, "%p", f.fLevelCode)
-	f.logFormat_ = strings.ReplaceAll(f.logFormat_, "%d", f.fDateCode)
-	f.logFormat_ = strings.ReplaceAll(f.logFormat_, "%m", f.fMessageCode)
+	f.formatContent = strings.ReplaceAll(f.formatContent, "%p", f.fLevelCode)
+	f.formatContent = strings.ReplaceAll(f.formatContent, "%d", f.fDateCode)
+	f.formatContent = strings.ReplaceAll(f.formatContent, "%m", f.fMessageCode)
 }
 
 type RotateFileHook struct {
