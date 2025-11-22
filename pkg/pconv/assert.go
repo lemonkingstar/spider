@@ -49,7 +49,9 @@ func Type2Int64(obj interface{}) (int64, error) {
 	case uint64:
 		return int64(v), nil
 	case string:
-		return strconv.ParseInt(v, 10, 64)
+		return strconv.ParseInt(v, 0, 64)
+	case []byte:
+		return strconv.ParseInt(string(v), 0, 64)
 	default:
 		return 0, errors.New("invalid num")
 	}
