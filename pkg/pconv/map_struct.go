@@ -1,4 +1,4 @@
-package pmap
+package pconv
 
 import (
 	"github.com/fatih/structs"
@@ -7,21 +7,21 @@ import (
 
 // Map2Struct convert map into a struct with 'tagName'
 //
-//  eg:
-//  self := MapStr{"testName":"testvalue"}
-//  targetStruct := &struct{
-//      Name string `field:"testName"`
-//  }
-//  After call the function Map2Struct(self, targetStruct, "field", false)
-//  the targetStruct.Name value will be 'testvalue'
+//	eg:
+//	self := MapStr{"testName":"testvalue"}
+//	targetStruct := &struct{
+//	    Name string `field:"testName"`
+//	}
+//	After call the function Map2Struct(self, targetStruct, "field", false)
+//	the targetStruct.Name value will be 'testvalue'
 func Map2Struct(sourceMap map[string]interface{}, targetStruct interface{}, tagName string, weaklyTyped bool, v ...interface{}) error {
 	config := &mapstructure.DecoderConfig{
 		// pointer to the struct
-		Result:   			targetStruct,
+		Result: targetStruct,
 		// defaults to "mapstructure"
-		TagName:  			tagName,
+		TagName: tagName,
 		// do weak conversion
-		WeaklyTypedInput: 	weaklyTyped,
+		WeaklyTypedInput: weaklyTyped,
 	}
 	if len(v) > 0 {
 		// custom data decode
@@ -43,12 +43,12 @@ func Map2StructDefault(sourceMap map[string]interface{}, targetStruct interface{
 
 // Struct2Map convert struct into a map
 //
-//  eg:
-//  sourceStruct := &struct{
-//      Name string `field:"testName"`
-//  }
-//  After call the function Struct2Map(sourceStruct, "field")
-//  will return map info
+//	eg:
+//	sourceStruct := &struct{
+//	    Name string `field:"testName"`
+//	}
+//	After call the function Struct2Map(sourceStruct, "field")
+//	will return map info
 func Struct2Map(sourceStruct interface{}, tagName string) (map[string]interface{}, error) {
 	s := structs.New(sourceStruct)
 	// defaults to "structs"

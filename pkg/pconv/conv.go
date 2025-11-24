@@ -37,26 +37,26 @@ func SliceStrToInt(sliceStr []string) ([]int, error) {
 	return sliceInt, nil
 }
 
-func Str2Int(str string) (int, error) {
+func StrToInt(str string) (int, error) {
 	return strconv.Atoi(str)
 }
 
-func Str2Int64(str string) (int64, error) {
+func StrToInt64(str string) (int64, error) {
 	return strconv.ParseInt(str, 10, 64)
 }
 
-func Str2Float(str string) (float64, error) {
+func StrToFloat(str string) (float64, error) {
 	return strconv.ParseFloat(str, 64)
 }
 
-func Int2Str(i int) string {
+func IntToStr(i int) string {
 	return strconv.Itoa(i)
 }
 
-func Int642Str(i int64) string {
-	return strconv.FormatInt(i,10)
+func Int64ToStr(i int64) string {
+	return strconv.FormatInt(i, 10)
 }
 
-func Float2Str(i float64) string {
+func FloatToStr(i float64) string {
 	return strconv.FormatFloat(i, 'f', -1, 64)
 }

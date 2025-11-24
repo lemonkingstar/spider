@@ -1,4 +1,4 @@
-package pmap
+package pconv
 
 import (
 	"bytes"
@@ -13,16 +13,15 @@ import (
 	"github.com/mohae/deepcopy"
 )
 
-// MapStr the common event data definition
 type MapStr map[string]interface{}
 
-// Clone create a new MapStr by deepcopy
+// Clone creates a new MapStr by deepcopy.
 func (cli MapStr) Clone() MapStr {
 	cpyInst := deepcopy.Copy(cli)
 	return cpyInst.(MapStr)
 }
 
-// Merge merge second into self,if the key is the same then the new value replaces the old value.
+// Merge merges second into self,if the key is the same then the new value replaces the old value.
 func (cli MapStr) Merge(second MapStr) {
 	for key, val := range second {
 		if strings.Contains(key, ".") {
@@ -35,7 +34,7 @@ func (cli MapStr) Merge(second MapStr) {
 	}
 }
 
-// IsNil returns whether value is nil value, including map[string]interface{}{nil}, *Struct{nil}
+// IsNil returns whether value is nil value, including map[string]interface{}{nil}, *Struct{nil}.
 func IsNil(value interface{}) bool {
 	rflValue := reflect.ValueOf(value)
 	if rflValue.IsValid() {
@@ -44,7 +43,7 @@ func IsNil(value interface{}) bool {
 	return true
 }
 
-// ToMapInterface convert to map[string]interface{}
+// ToMapInterface convert to map[string]interface{}.
 func (cli MapStr) ToMapInterface() map[string]interface{} {
 	return cli
 }
@@ -54,12 +53,12 @@ func (cli MapStr) ToStructByTag(targetStruct interface{}, tagName string) error 
 	return Map2Struct(cli, targetStruct, tagName, false)
 }
 
-// ToStruct convert self into a struct with default tag
+// ToStruct convert self into a struct with default tag.
 func (cli MapStr) ToStruct(targetStruct interface{}) error {
 	return Map2Struct(cli, targetStruct, "json", false)
 }
 
-// MarshalJSONInto convert to the input value
+// MarshalJSONInto convert to the input value.
 func (cli MapStr) MarshalJSONInto(target interface{}) error {
 
 	data, err := cli.ToJSON()
@@ -77,7 +76,7 @@ func (cli MapStr) MarshalJSONInto(target interface{}) error {
 	return nil
 }
 
-// ToJSON convert to json string
+// ToJSON convert to json string.
 func (cli MapStr) ToJSON() ([]byte, error) {
 	js, err := json.Marshal(cli)
 	if err != nil {
@@ -86,26 +85,26 @@ func (cli MapStr) ToJSON() ([]byte, error) {
 	return js, nil
 }
 
-// Get return the origin value by the key
+// Get return the origin value by the key.
 func (cli MapStr) Get(key string) (val interface{}, exists bool) {
 
 	val, exists = cli[key]
 	return val, exists
 }
 
-// Set set a new value for the key, the old value will be replaced
+// Set sets a new value for the key, the old value will be replaced.
 func (cli MapStr) Set(key string, value interface{}) {
 	cli[key] = value
 }
 
-// Reset  reset the mapstr into the init state
+// Reset resets the mapstr into the init state.
 func (cli MapStr) Reset() {
 	for key := range cli {
 		delete(cli, key)
 	}
 }
 
-// Bool get the value as bool
+// Bool gets the value as bool.
 func (cli MapStr) Bool(key string) (bool, error) {
 	switch t := cli[key].(type) {
 	case nil:
@@ -117,7 +116,7 @@ func (cli MapStr) Bool(key string) (bool, error) {
 	}
 }
 
-// Int64 return the value by the key
+// Int64 returns the value by the key.
 func (cli MapStr) Int64(key string) (int64, error) {
 	switch t := cli[key].(type) {
 	default:
@@ -152,7 +151,7 @@ func (cli MapStr) Int64(key string) (int64, error) {
 	}
 }
 
-// Float get the value as float64
+// Float gets the value as float64.
 func (cli MapStr) Float(key string) (float64, error) {
 	switch t := cli[key].(type) {
 	default:
@@ -176,7 +175,7 @@ func (cli MapStr) Float(key string) (float64, error) {
 	}
 }
 
-// String get the value as string
+// String gets the value as string.
 func (cli MapStr) String(key string) (string, error) {
 	switch t := cli[key].(type) {
 	case nil:
@@ -200,7 +199,7 @@ func (cli MapStr) String(key string) (string, error) {
 	}
 }
 
-// Time get the value as time.Time
+// Time gets the value as time.Time.
 func (cli MapStr) Time(key string) (*time.Time, error) {
 	switch t := cli[key].(type) {
 	default:
@@ -244,7 +243,7 @@ func (cli MapStr) Time(key string) (*time.Time, error) {
 	}
 }
 
-// MapStr get the MapStr object
+// MapStr gets the MapStr object.
 func (cli MapStr) MapStr(key string) (MapStr, error) {
 
 	switch t := cli[key].(type) {
@@ -263,7 +262,7 @@ func (cli MapStr) MapStr(key string) (MapStr, error) {
 
 }
 
-// MapStrArray get the MapStr object array
+// MapStrArray gets the MapStr object array.
 func (cli MapStr) MapStrArray(key string) ([]MapStr, error) {
 
 	switch t := cli[key].(type) {
@@ -273,9 +272,9 @@ func (cli MapStr) MapStrArray(key string) ([]MapStr, error) {
 		default:
 			return nil, fmt.Errorf("the value of the key(%s) is not a valid type,%s", key, val.Kind().String())
 		case reflect.Slice:
-			tmpval, ok := val.Interface().([]MapStr)
+			tmpVal, ok := val.Interface().([]MapStr)
 			if ok {
-				return tmpval, nil
+				return tmpVal, nil
 			}
 
 			return nil, fmt.Errorf("the value of the key(%s) is not a valid type,%s", key, val.Kind().String())
@@ -310,7 +309,7 @@ func (cli MapStr) MapStrArray(key string) ([]MapStr, error) {
 
 }
 
-// ForEach for each the every item
+// ForEach for each the every item.
 func (cli MapStr) ForEach(callItem func(key string, val interface{}) error) error {
 
 	for key, val := range cli {
@@ -322,7 +321,7 @@ func (cli MapStr) ForEach(callItem func(key string, val interface{}) error) erro
 	return nil
 }
 
-// Remove delete the item by the key and return the deleted one
+// Remove delete the item by the key and return the deleted one.
 func (cli MapStr) Remove(key string) interface{} {
 
 	if val, ok := cli[key]; ok {
@@ -333,20 +332,19 @@ func (cli MapStr) Remove(key string) interface{} {
 	return nil
 }
 
-// Exists check the key exists
+// Exists check the key exists.
 func (cli MapStr) Exists(key string) bool {
 	_, ok := cli[key]
 	return ok
 }
 
-// IsEmpty check the empty status
+// IsEmpty check the empty status.
 func (cli MapStr) IsEmpty() bool {
 	return len(cli) == 0
 }
 
-// Different the current value is different from the content of the given data
+// Different the current value is different from the content of the given data.
 func (cli MapStr) Different(target MapStr) (more MapStr, less MapStr, changes MapStr) {
-
 	// init
 	more = make(MapStr)
 	less = make(MapStr)
