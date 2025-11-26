@@ -5,8 +5,8 @@ import (
 )
 
 type Group struct {
-	wg 		sync.WaitGroup
-	c 		chan error
+	wg sync.WaitGroup
+	c  chan error
 }
 
 func NewGroup() *Group {
@@ -15,7 +15,7 @@ func NewGroup() *Group {
 	}
 }
 
-// Go calls the given function in a new goroutine
+// Go calls the given function in a new goroutine.
 func (g *Group) Go(f func() error) {
 	g.wg.Add(1)
 	go func() {
@@ -35,7 +35,7 @@ func (g *Group) Wait() error {
 	g.wg.Wait()
 	var err error
 	if len(g.c) > 0 {
-		err, _ = <- g.c
+		err, _ = <-g.c
 	}
 	return err
 }

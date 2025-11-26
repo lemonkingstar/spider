@@ -85,8 +85,8 @@ func StrArrayUnique(arr []string, delEmpty bool) (ret []string) {
 	return ret
 }
 
-// StrArrayUniqueE removes duplicates from a string array.
-func StrArrayUniqueE(arr []string) (ret []string) {
+// StrArrayUniqueDelEmpty removes duplicates from a string array.
+func StrArrayUniqueDelEmpty(arr []string) (ret []string) {
 	ret = StrArrayUnique(arr, true)
 	return
 }

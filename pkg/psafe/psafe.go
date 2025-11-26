@@ -1,8 +1,8 @@
 // Package psafe
-// @Title  psafe.go
-// @Description  golang security operations
-// @Author  wuzi
-// @Update  wuzi
+// @Title psafe.go
+// @Description golang security operations
+// @Author spider
+// @Update spider
 package psafe
 
 import (
@@ -17,28 +17,28 @@ var (
 	logger = plog.WithField("[PACKET]", "psafe")
 )
 
-func Go(g func()) {
+func Go(f func()) {
 	go func() {
 		defer Recover()
-		if g != nil {
-			g()
+		if f != nil {
+			f()
 		}
 	}()
 }
 
-func GoContext(g func(context.Context), ctx context.Context) {
+func GoCtx(f func(context.Context), ctx context.Context) {
 	go func() {
 		defer Recover()
-		if g != nil {
-			g(ctx)
+		if f != nil {
+			f(ctx)
 		}
 	}()
 }
 
-func Call(c func()) {
+func Call(f func()) {
 	defer Recover()
-	if c != nil {
-		c()
+	if f != nil {
+		f()
 	}
 }
 
@@ -52,11 +52,11 @@ func Recover(handlers ...func(interface{})) {
 	}
 }
 
-func GoLoop(g func(), interval ...int) {
-	loop := func(g func()) {
+func GoForever(f func(), interval ...int) {
+	loop := func(f func()) {
 		defer Recover()
-		if g != nil {
-			g()
+		if f != nil {
+			f()
 		}
 	}
 
@@ -66,7 +66,7 @@ func GoLoop(g func(), interval ...int) {
 	}
 	go func() {
 		for {
-			loop(g)
+			loop(f)
 			time.Sleep(time.Duration(t) * time.Second)
 		}
 	}()
