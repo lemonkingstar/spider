@@ -26,7 +26,7 @@ func Default() *GinServer {
 	gin.SetMode(gin.ReleaseMode)
 	g := gin.New()
 	g.Use(middleware.RecoverMiddleware())
-	g.Use(middleware.CORSMiddleware())
+	g.Use(middleware.CORSMiddleware(nil))
 	g.Use(middleware.LayerMiddleware(true))
 	return &GinServer{engine: g}
 }
