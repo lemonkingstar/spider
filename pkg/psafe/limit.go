@@ -25,7 +25,7 @@ func NewGl(num int) *Golimit {
 }
 
 func (g *Golimit) Run(f func()) {
-	if g.closed {
+	if g.closed || f == nil {
 		return
 	}
 	g.wg.Add(1)

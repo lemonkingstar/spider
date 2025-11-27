@@ -1,45 +1,68 @@
 package psafe
 
 import (
+	"fmt"
 	"sync"
 )
 
+// Group can concurrently execute multiple functions and obtain all the execution results.
 type Group struct {
-	wg sync.WaitGroup
-	c  chan error
+	wg   sync.WaitGroup
+	mu   sync.Mutex
+	errs []error
 }
 
 func NewGroup() *Group {
-	return &Group{
-		c: make(chan error, 100),
-	}
+	return &Group{}
 }
 
-// Go calls the given function in a new goroutine.
-func (g *Group) Go(f func() error) {
+// Run calls the given function in a new goroutine.
+func (g *Group) Run(f func() error) {
+	if f == nil {
+		return
+	}
 	g.wg.Add(1)
 	go func() {
 		defer g.wg.Done()
+		defer func() {
+			if err := recover(); err != nil {
+				g.mu.Lock()
+				defer g.mu.Unlock()
+				g.errs = append(g.errs, fmt.Errorf("panic recovered: %v", err))
+			}
+		}()
 		if err := f(); err != nil {
-			g.c <- err
+			g.mu.Lock()
+			defer g.mu.Unlock()
+			g.errs = append(g.errs, err)
 		}
 	}()
 }
 
-func (g *Group) Done() chan error {
-	return g.c
-}
-
-func (g *Group) Wait() error {
-	defer g.Close()
+func (g *Group) WaitErrors() []error {
 	g.wg.Wait()
-	var err error
-	if len(g.c) > 0 {
-		err, _ = <-g.c
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	if len(g.errs) == 0 {
+		return nil
 	}
-	return err
+
+	errs := make([]error, len(g.errs))
+	copy(errs, g.errs)
+	return errs
 }
 
-func (g *Group) Close() {
-	close(g.c)
+// WaitError only returns the first error.
+func (g *Group) WaitError() error {
+	errs := g.WaitErrors()
+	if len(errs) > 0 {
+		return errs[0]
+	}
+	return nil
+}
+
+func (g *Group) Clear() {
+	g.mu.Lock()
+	defer g.mu.Unlock()
+	g.errs = nil
 }
