@@ -78,4 +78,18 @@ func TestAtomicLock(t *testing.T) {
 		}()
 	}
 	wg.Wait()
+
+	ato.Unset()
+	for i := 0; i < 10000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if ato.IsSet() {
+				return
+			}
+			ato.Set()
+			t.Log("third locked.")
+		}()
+	}
+	wg.Wait()
 }
