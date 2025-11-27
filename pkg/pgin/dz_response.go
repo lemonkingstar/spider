@@ -7,10 +7,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
+	"github.com/lemonkingstar/spider/pkg/server"
 	"github.com/rs/xid"
 	"go.uber.org/zap"
-
-	"github.com/lemonkingstar/spider/pkg/pbase"
 )
 
 // D2 通用返回数据结构
@@ -23,7 +22,7 @@ type D2 struct {
 }
 
 func DzCheckError(c *gin.Context, logger *zap.Logger, code int64, msg string, data ...interface{}) {
-	requestID := c.Request.Header.Get(pbase.PXHTTPCCRequestID)
+	requestID := c.Request.Header.Get(server.PXHTTPCCRequestID)
 	var result = D2{Ret: code, Msg: msg, Timestamp: time.Now().Unix(), RequestID: requestID}
 	if data != nil {
 		result.Data = data[0]
@@ -46,12 +45,12 @@ func GenerateRID() string {
 // g.Use(RequestIDMiddleware())
 func RequestIDMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		rid := c.Request.Header.Get(pbase.PXHTTPCCRequestID)
+		rid := c.Request.Header.Get(server.PXHTTPCCRequestID)
 		if rid == "" {
 			rid = GenerateRID()
-			c.Request.Header.Set(pbase.PXHTTPCCRequestID, rid)
+			c.Request.Header.Set(server.PXHTTPCCRequestID, rid)
 		}
-		c.Writer.Header().Set(pbase.PXHTTPCCRequestID, rid)
-		c.Set(pbase.ContextRequestID, rid)
+		c.Writer.Header().Set(server.PXHTTPCCRequestID, rid)
+		c.Set(server.ContextRequestID, rid)
 	}
 }

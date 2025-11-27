@@ -29,7 +29,7 @@ func LayerMiddleware(detail bool) gin.HandlerFunc {
 			time.Since(t)/time.Millisecond,
 			pginutil.GetRemoteIP(c),
 			c.Request.UserAgent(),
-			pbase.GetUser(c.Request.Header),
+			server.GetUser(c.Request.Header),
 			body,
 		)
 	}

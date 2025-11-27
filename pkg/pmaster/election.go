@@ -45,7 +45,7 @@ func Unregister() {
 
 func Run(prefix string) {
 	if prefix == "" {
-		prefix = pbase.SpiderApp
+		prefix = server.SpiderApp
 	}
 	masterNodeKey = fmt.Sprintf(masterNodeKey, prefix)
 	electionNodeKey = fmt.Sprintf(electionNodeKey, prefix)

@@ -2,15 +2,13 @@ package pgin
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/lemonkingstar/spider/pkg/pbase"
 	"github.com/lemonkingstar/spider/pkg/pgin/middleware"
 	"github.com/lemonkingstar/spider/pkg/plog"
+	"github.com/lemonkingstar/spider/pkg/server"
 )
 
 var (
@@ -32,26 +30,25 @@ func Default() *GinServer {
 }
 
 type GinServer struct {
-	opt    *pbase.Option
+	opt    *server.Delegate
 	engine *gin.Engine
 	srv    *http.Server
 }
 
-func (s *GinServer) Init(fns ...pbase.OptFunc) {
-	s.opt = pbase.NewOption(fns...)
+func (s *GinServer) Init(fns ...server.DelegateOption) {
+	s.opt = server.NewDelegate(fns...)
 }
 
 func (s *GinServer) Name() string {
-	return s.opt.Name
+	return s.opt.ServiceName
 }
 
 func (s *GinServer) Start() error {
-
 	s.srv = &http.Server{
-		Addr:    fmt.Sprintf("%s:%d", s.opt.BindIP, s.opt.BindPort),
+		Addr:    s.opt.Address,
 		Handler: s.engine,
 	}
-	logger.Infof("Server[%s] running at: %s", s.Name(), s.srv.Addr)
+	logger.Infof("server[%s] running at: %s", s.Name(), s.srv.Addr)
 	if err := s.srv.ListenAndServe(); err != nil {
 		logger.Errorf("listen error: %v", err)
 		return err
@@ -77,17 +74,14 @@ func (s *GinServer) GracefulStop() error {
 		return nil
 	}
 
-	logger.Info("Server exiting")
+	logger.Info("server exiting")
 	return nil
 }
-
-/******************* gin function ***************/
 
 func (s *GinServer) Engine() *gin.Engine {
 	return s.engine
 }
 
-// SetMode 设置日志级别
 func (s *GinServer) SetMode(debug bool) {
 	if debug {
 		gin.SetMode(gin.DebugMode)

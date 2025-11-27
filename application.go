@@ -1,4 +1,4 @@
-package phoenix
+package spider
 
 import (
 	"context"
@@ -9,14 +9,14 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/sevlyar/go-daemon"
-	"github.com/spf13/cobra"
-
-	"github.com/lemonkingstar/spider/pkg/pbase"
 	"github.com/lemonkingstar/spider/pkg/pconf"
+	"github.com/lemonkingstar/spider/pkg/perror"
 	"github.com/lemonkingstar/spider/pkg/plog"
 	"github.com/lemonkingstar/spider/pkg/psafe"
-	"github.com/lemonkingstar/spider/pkg/putil"
+	"github.com/lemonkingstar/spider/pkg/server"
+	"github.com/lemonkingstar/spider/pkg/worker"
+	"github.com/sevlyar/go-daemon"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -24,8 +24,8 @@ var (
 )
 
 type Application struct {
-	servers      []pbase.Server
-	workers      []pbase.Worker
+	servers      []server.Server
+	workers      []worker.Worker
 	startups     []func() error
 	beforeStart  func()
 	afterStart   func()
@@ -36,13 +36,11 @@ type Application struct {
 }
 
 var (
-	// RootCmd root cmd
 	RootCmd = &cobra.Command{
 		Use:     filepath.Base(os.Args[0]),
 		Version: "",
 	}
 
-	// RootParam root param
 	RootParam = struct {
 		ConfigFile  string
 		VersionFlag bool
@@ -55,12 +53,12 @@ func (app *Application) Startup(fns ...func() error) *Application {
 	return app
 }
 
-func (app *Application) Server(s ...pbase.Server) *Application {
+func (app *Application) Server(s ...server.Server) *Application {
 	app.servers = append(app.servers, s...)
 	return app
 }
 
-func (app *Application) Worker(w ...pbase.Worker) *Application {
+func (app *Application) Worker(w ...worker.Worker) *Application {
 	app.workers = append(app.workers, w...)
 	return app
 }
@@ -101,12 +99,13 @@ func (app *Application) Execute() {
 		app.argsFunc()
 	}
 	RootCmd.SetHelpFunc(func(*cobra.Command, []string) {
+		// print usage info
 		RootCmd.Usage()
 		os.Exit(0)
 	})
 
 	RootCmd.Run = func(cmd *cobra.Command, args []string) {
-		// root command run
+		// the work function
 		if RootParam.VersionFlag {
 			// show version
 			fmt.Println(pconf.VERSION)
@@ -127,8 +126,6 @@ func (app *Application) Execute() {
 			}
 			defer ctx.Release()
 		}
-
-		// start run
 		app.Run()
 	}
 
@@ -140,7 +137,6 @@ func (app *Application) Execute() {
 }
 
 func (app *Application) Run() {
-	// run
 	if RootParam.ConfigFile != "" {
 		pconf.SetConfigFile(RootParam.ConfigFile)
 	}
@@ -148,20 +144,18 @@ func (app *Application) Run() {
 		logger.Errorf("load config error: %v", err)
 		return
 	}
-
-	// startup
-	if err := putil.SerialUntilError(app.startups...)(); err != nil {
+	if err := perror.SerialUntilError(app.startups...)(); err != nil {
 		logger.Errorf("startup error: %v", err)
 		return
 	}
 	// server&worker
-	once := sync.Once{}
+	startErr := sync.Once{}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	for _, s := range app.servers {
-		go func(server pbase.Server) {
+		go func(server server.Server) {
 			if err := server.Start(); err != nil {
-				once.Do(func() {
+				startErr.Do(func() {
 					logger.Errorf("server start error: %v", err)
 					cancel()
 				})
@@ -169,9 +163,9 @@ func (app *Application) Run() {
 		}(s)
 	}
 	for _, w := range app.workers {
-		go func(worker pbase.Worker) {
+		go func(worker worker.Worker) {
 			if err := worker.Start(); err != nil {
-				once.Do(func() {
+				startErr.Do(func() {
 					logger.Errorf("worker start error: %v", err)
 					cancel()
 				})
@@ -197,20 +191,20 @@ func (app *Application) endingProc(ctx context.Context) {
 	if app.beforeStop != nil {
 		app.beforeStop()
 	}
-	// stop clean
+	// wait for stop
 	pg := psafe.NewGroup()
 	for _, s := range app.servers {
-		pg.Go(s.Stop)
+		pg.Run(s.Stop)
 	}
 	for _, w := range app.workers {
-		pg.Go(w.Stop)
+		pg.Run(w.Stop)
 	}
-	err := pg.Wait()
+	err := pg.WaitError()
 	if err != nil {
 		logger.Errorf("server stop error: %v", err)
 	}
 	if app.afterStop != nil {
 		app.afterStop()
 	}
-	logger.Info("stopped successfully")
+	logger.Info("stopped")
 }
