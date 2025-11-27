@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lemonkingstar/spider/pkg/putil"
+	"github.com/lemonkingstar/spider/pkg/pconv"
 )
 
 // WrapUrl 拼接url query
@@ -34,7 +34,7 @@ func WrapUrlEx(addr string, params map[string]interface{}) (string, error) {
 	}
 	q := u.Query()
 	for key, obj := range params {
-		value, _ := putil.GetObjString(obj)
+		value, _ := pconv.Type2Str(obj)
 		q.Set(key, value)
 	}
 	u.RawQuery = q.Encode()

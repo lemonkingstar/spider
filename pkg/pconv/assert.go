@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 )
 
@@ -17,8 +18,13 @@ func Type2Str(obj interface{}) (string, error) {
 		return strconv.FormatFloat(v, 'f', -1, 64), nil
 	case string:
 		return v, nil
+	case []byte:
+		return string(v), nil
 	case json.Number:
 		return v.String(), nil
+	case map[string]interface{}, []string, []int, []int32, []int64:
+		b, err := json.Marshal(v)
+		return string(b), err
 	default:
 		return fmt.Sprintf("%v", v), nil
 	}
@@ -53,11 +59,11 @@ func Type2Int64(obj interface{}) (int64, error) {
 	case []byte:
 		return strconv.ParseInt(string(v), 0, 64)
 	default:
-		return 0, errors.New("invalid num")
+		return 0, errors.New("invalid number")
 	}
 }
 
-func Type2Float(obj interface{}) (float64, error) {
+func Type2Float64(obj interface{}) (float64, error) {
 	switch v := obj.(type) {
 	case nil:
 		return 0, errors.New("nil object")
@@ -74,48 +80,62 @@ func Type2Float(obj interface{}) (float64, error) {
 	case float64:
 		return v, nil
 	default:
-		return 0, errors.New("invalid num")
+		return 0, errors.New("invalid number")
 	}
 }
 
-func Type2StrArr(obj interface{}) ([]string, error) {
+func Type2StrArray(obj interface{}) ([]string, error) {
 	switch v := obj.(type) {
 	case nil:
 		return nil, errors.New("nil object")
 	case []string:
 		return v, nil
-	case []interface{}:
-		arr := []string{}
-		for _, val := range v {
-			if str, err := Type2Str(val); err != nil {
+	default:
+		val := reflect.ValueOf(obj)
+		if val.Kind() != reflect.Slice {
+			return nil, errors.New("invalid type")
+		}
+		if val.Len() == 0 {
+			return []string{}, nil
+		}
+
+		var arr []string
+		for i := 0; i < val.Len(); i++ {
+			elem := val.Index(i).Interface()
+			str, err := Type2Str(elem)
+			if err != nil {
 				return nil, err
-			} else {
-				arr = append(arr, str)
 			}
+			arr = append(arr, str)
 		}
 		return arr, nil
-	default:
-		return nil, errors.New("invalid arr")
 	}
 }
 
-func Type2Int64Arr(obj interface{}) ([]int64, error) {
+func Type2Int64Array(obj interface{}) ([]int64, error) {
 	switch v := obj.(type) {
 	case nil:
 		return nil, errors.New("nil object")
 	case []int64:
 		return v, nil
-	case []interface{}:
-		arr := []int64{}
-		for _, val := range v {
-			if i, err := Type2Int64(val); err != nil {
+	default:
+		val := reflect.ValueOf(obj)
+		if val.Kind() != reflect.Slice {
+			return nil, errors.New("invalid type")
+		}
+		if val.Len() == 0 {
+			return []int64{}, nil
+		}
+
+		var arr []int64
+		for i := 0; i < val.Len(); i++ {
+			elem := val.Index(i).Interface()
+			ret, err := Type2Int64(elem)
+			if err != nil {
 				return nil, err
-			} else {
-				arr = append(arr, i)
 			}
+			arr = append(arr, ret)
 		}
 		return arr, nil
-	default:
-		return nil, errors.New("invalid arr")
 	}
 }

@@ -143,8 +143,8 @@ func BoolArrayUnique(arr []bool) (ret []bool) {
 	return ret
 }
 
-// StrArrDiff queries difference set between two string array.
-func StrArrDiff(firstArr []string, secondArr []string) []string {
+// StrArrayDiff queries difference set between two string array.
+func StrArrayDiff(firstArr []string, secondArr []string) []string {
 	diffStr := make([]string, 0)
 	for _, i := range firstArr {
 		isIn := false
@@ -161,8 +161,8 @@ func StrArrDiff(firstArr []string, secondArr []string) []string {
 	return diffStr
 }
 
-// IntArrIntersection queries intersection between two integer array.
-func IntArrIntersection(firstArr []int64, secondArr []int64) []int64 {
+// IntArrayIntersection queries intersection between two integer array.
+func IntArrayIntersection(firstArr []int64, secondArr []int64) []int64 {
 	intersectInt := make([]int64, 0)
 	intMap := make(map[int64]bool)
 	for _, i := range firstArr {
@@ -176,8 +176,8 @@ func IntArrIntersection(firstArr []int64, secondArr []int64) []int64 {
 	return intersectInt
 }
 
-// StrArrIntersection queries intersection between two string array.
-func StrArrIntersection(firstArr []string, secondArr []string) []string {
+// StrArrayIntersection queries intersection between two string array.
+func StrArrayIntersection(firstArr []string, secondArr []string) []string {
 	intersectStr := make([]string, 0)
 	strMap := make(map[string]bool)
 	for _, i := range firstArr {
