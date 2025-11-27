@@ -1,7 +1,6 @@
 package patomic
 
 import (
-	"fmt"
 	"reflect"
 	"sync"
 	"testing"
@@ -9,30 +8,30 @@ import (
 )
 
 func TestAtomicInt(t *testing.T) {
-	// 不使用 atomic操作
+	// not use atomic
 	sum := 0
 	wg := sync.WaitGroup{}
 	for i := 0; i < 10000; i++ {
 		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			sum += 1
-			wg.Done()
 		}()
 	}
 	wg.Wait()
-	fmt.Println("sum = ", sum)
+	t.Log("sum = ", sum)
 
-	// 使用 atomic操作
+	// use atomic
 	ato := NewAtomicValue(0)
 	for i := 0; i < 10000; i++ {
 		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			ato.Increase()
-			wg.Done()
 		}()
 	}
 	wg.Wait()
-	fmt.Println("ato = ", ato.GetInt())
+	t.Log("sum = ", ato.GetInt())
 }
 
 func TestAtomicPointer(t *testing.T) {
@@ -40,16 +39,43 @@ func TestAtomicPointer(t *testing.T) {
 		i int32
 		j int64
 	}
-	v := &V{
-		i: 100,
-		j: 1024,
-	}
-
+	val := &V{i: 100, j: 1024}
 	ato := &AtomicValue{}
-	ato.StorePointer(unsafe.Pointer(v))
+	ato.StorePointer(unsafe.Pointer(val))
 
-	v2 := ato.LoadPointer()
-	fmt.Println((*V)(v2))
+	val2 := ato.LoadPointer()
+	t.Log((*V)(val2))
+	t.Log(reflect.TypeOf(val2))
+}
 
-	fmt.Println(reflect.TypeOf(v2))
+func TestAtomicLock(t *testing.T) {
+	// not use atomic
+	locked := false
+	wg := sync.WaitGroup{}
+	for i := 0; i < 10000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if locked {
+				return
+			}
+			locked = true
+			t.Log("first locked.")
+		}()
+	}
+	wg.Wait()
+
+	// use atomic
+	ato := NewAtomicValue(0)
+	for i := 0; i < 10000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			if !ato.CompareAndSwapInt(0, 1) {
+				return
+			}
+			t.Log("second locked.")
+		}()
+	}
+	wg.Wait()
 }
