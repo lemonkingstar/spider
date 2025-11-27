@@ -4,7 +4,7 @@ import (
 	"sync"
 )
 
-// Golimit limits the maximum concurrent number of coroutines.
+// Golimit limits the maximum concurrent number of goroutines.
 type Golimit struct {
 	num    int
 	ch     chan struct{}
@@ -37,12 +37,14 @@ func (g *Golimit) Run(f func()) {
 	}()
 }
 
+// Wait returns until all goroutines are done.
+// Do not use *Golimit after Wait is called.
 func (g *Golimit) Wait() {
 	g.wg.Wait()
-	g.Close()
+	g.close()
 }
 
-func (g *Golimit) Close() {
+func (g *Golimit) close() {
 	if !g.closed {
 		g.closed = true
 		close(g.ch)
