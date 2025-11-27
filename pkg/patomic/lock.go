@@ -20,12 +20,15 @@ func NewLock() SimpleLock {
 	return &lock{ato: NewAtomicValue(0)}
 }
 
+// Lock returns until get the lock.
 func (l *lock) Lock() {
 	for !l.TryLock() {
 		runtime.Gosched()
 	}
 }
 
+// LockWithTimeout returns true until get the lock.
+// Return false when timeout.
 func (l *lock) LockWithTimeout(timeout time.Duration) bool {
 	deadline := time.Now().Add(timeout)
 	for !l.TryLock() {
