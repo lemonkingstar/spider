@@ -1,4 +1,4 @@
-package p8s
+package pp8s
 
 import (
 	"context"

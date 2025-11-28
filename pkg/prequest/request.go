@@ -1,95 +1,163 @@
 package prequest
 
 import (
-	"bytes"
-	"io"
-	"io/ioutil"
-	"mime/multipart"
+	"crypto/tls"
+	"fmt"
 	"net/http"
-	"net/url"
-	"os"
-	"path/filepath"
+	"time"
 
-	"github.com/lemonkingstar/spider/pkg/pconv"
+	"github.com/parnurzeal/gorequest"
 )
 
-// WrapUrl 拼接url query
-func WrapUrl(addr string, params map[string]string) (string, error) {
-	u, err := url.Parse(addr)
-	if err != nil {
-		return "", err
-	}
-	q := u.Query()
-	for key, value := range params {
-		q.Set(key, value)
-	}
-	u.RawQuery = q.Encode()
-	return u.String(), nil
+const (
+	timeout = 60 * time.Second
+)
+
+type HttpRequest struct{
+	agent *gorequest.SuperAgent
+
+	bounceToRawString    	bool
+	disableSecurityCheck	bool
 }
 
-func WrapUrlEx(addr string, params map[string]interface{}) (string, error) {
-	u, err := url.Parse(addr)
-	if err != nil {
-		return "", err
+func New() *HttpRequest {
+	client := &HttpRequest{
+		agent: gorequest.New(),
+		bounceToRawString: false,
+		disableSecurityCheck: false,
 	}
-	q := u.Query()
-	for key, obj := range params {
-		value, _ := pconv.Type2Str(obj)
-		q.Set(key, value)
-	}
-	u.RawQuery = q.Encode()
-	return u.String(), nil
+	client.agent.Client.Timeout = timeout
+	return client
 }
 
-func SendFile(url string, files map[string]string, form map[string]string, args ...map[string]string) (*http.Response, []byte, error) {
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	f := func(field, path string) error {
-		file, err := os.Open(path)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-		part, err := writer.CreateFormFile(field, filepath.Base(path))
-		if err != nil {
-			return err
-		}
-		io.Copy(part, file)
-		return nil
+func (p *HttpRequest) Clean() *HttpRequest {
+	p.agent.ClearSuperAgent()
+	return p
+}
+
+func (p *HttpRequest) SetBounceToRawString(v bool) *HttpRequest {
+	p.bounceToRawString = v
+	return p
+}
+
+// DisableSecurityCheck 禁用https安全校验
+func (p *HttpRequest) DisableSecurityCheck(v bool) *HttpRequest {
+	p.disableSecurityCheck = v
+	return p
+}
+
+func (p *HttpRequest) SetTimeout(d time.Duration) *HttpRequest {
+	p.agent.Client.Timeout = d
+	return p
+}
+
+// AddQuery 添加查询参数
+// AddQuery(map[string]string{"name": "jack"})
+// AddQuery(map[string]interface{"age": 18})
+func (p *HttpRequest) AddQuery(params interface{}) *HttpRequest {
+	if value, ok := params.(map[string]string); ok {
+		for k, v := range value { p.agent.Param(k, v) }
+	} else if value, ok := params.(map[string]interface{}); ok {
+		for k, v := range value { p.agent.Param(k, fmt.Sprintf("%v", v)) }
 	}
-	// 添加文件
-	for k, v := range files {
-		if err := f(k, v); err != nil {
-			return nil, nil, err
-		}
+	return p
+}
+
+func (p *HttpRequest) AddCookies(cookies []*http.Cookie) *HttpRequest {
+	p.agent.AddCookies(cookies)
+	return p
+}
+
+func (p *HttpRequest) send(method, url string, headers map[string]string, data interface{}) {
+	p.agent.BounceToRawString = p.bounceToRawString
+	if p.disableSecurityCheck {
+		p.agent.Transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	}
-	// 添加表单
-	for k, v := range form {
-		writer.WriteField(k, v)
-	}
-	writer.Close()
-	req, err := http.NewRequest("POST", url, body)
-	if err != nil {
-		return nil, nil, err
-	}
-	// 添加头
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	headers := map[string]string{}
-	if len(args) == 1 {
-		headers = args[0]
-	}
+	p.agent.Method = method
+	p.agent.Url = url
 	for k, v := range headers {
-		req.Header.Set(k, v)
+		p.agent = p.agent.Set(k, v)
 	}
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, nil, err
+	p.agent.Send(data)
+}
+
+func (p *HttpRequest) Request(method, url string, headers map[string]string, data interface{}) (*http.Response, []byte, error) {
+	p.send(method, url, headers, data)
+	resp, body, errs := p.agent.EndBytes()
+	p.Clean()
+	if len(errs) > 0 {
+		return nil, nil, errs[0]
 	}
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, nil, err
+
+	return resp, body, nil
+}
+
+func (p *HttpRequest) RequestStruct(method, url string, headers map[string]string, data interface{}, v interface{}) (*http.Response, []byte, error) {
+	p.send(method, url, headers, data)
+	resp, body, errs := p.agent.EndStruct(v)
+	p.Clean()
+	if len(errs) > 0 {
+		return nil, nil, errs[0]
 	}
-	return resp, b, nil
+
+	return resp, body, nil
+}
+
+func (p *HttpRequest) Get(url string, headers map[string]string, data interface{}) (*http.Response, []byte, error) {
+	return p.Request("GET", url, headers, data)
+}
+
+func (p *HttpRequest) GetStruct(url string, headers map[string]string, data interface{}, v interface{}) (*http.Response, []byte, error) {
+	return p.RequestStruct("GET", url, headers, data, v)
+}
+
+func (p *HttpRequest) Post(url string, headers map[string]string, data interface{}) (*http.Response, []byte, error) {
+	return p.Request("POST", url, headers, data)
+}
+
+func (p *HttpRequest) Put(url string, headers map[string]string, data interface{}) (*http.Response, []byte, error) {
+	return p.Request("PUT", url, headers, data)
+}
+
+func (p *HttpRequest) Patch(url string, headers map[string]string, data interface{}) (*http.Response, []byte, error) {
+	return p.Request("PATCH", url, headers, data)
+}
+
+func (p *HttpRequest) Delete(url string, headers map[string]string, data interface{}) (*http.Response, []byte, error) {
+	return p.Request("DELETE", url, headers, data)
+}
+
+// AddFile 添加文件
+func (p *HttpRequest) AddFile(field string, file interface{}, args ...string) *HttpRequest {
+	switch file.(type) {
+	case string:
+		// file: 文件路径 filename: filepath.Base(file)
+		p.agent.SendFile(file, "", field)
+	case []byte:
+		filename := ""
+		if len(args) == 1 { filename = args[0] }
+		// file: 文件内容 filename:
+		p.agent.SendFile(file, filename, field)
+	}
+	return p
+}
+
+func (p *HttpRequest) EndFile(url string, form map[string]interface{}, args ...map[string]string) (*http.Response, []byte, error) {
+	p.agent.Method = "POST"
+	p.agent.Url = url
+	headers := map[string]string{}
+	if len(args) == 1 { headers = args[0] }
+	for k, v := range headers {
+		p.agent = p.agent.Set(k, v)
+	}
+	if len(form) > 0 {
+		p.agent.SendMap(form)
+	}
+
+	resp, body, errs := p.agent.Type("multipart").EndBytes()
+	if len(errs) > 0 {
+		return nil, nil, errs[0]
+	}
+
+	return resp, body, nil
 }

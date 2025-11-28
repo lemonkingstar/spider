@@ -1,4 +1,4 @@
-package pmetrics
+package pmetric
 
 import (
 	"strconv"
