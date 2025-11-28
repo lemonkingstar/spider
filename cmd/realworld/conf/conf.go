@@ -19,6 +19,7 @@ type Server struct {
 }
 
 type ServerHTTP struct {
+	Name    string `json:"name,omitempty"`
 	Network string `json:"network,omitempty"`
 	Addr    string `json:"addr,omitempty"`
 }

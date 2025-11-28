@@ -22,7 +22,7 @@ type D2 struct {
 }
 
 func DzCheckError(c *gin.Context, logger *zap.Logger, code int64, msg string, data ...interface{}) {
-	requestID := c.Request.Header.Get(server.PXHTTPCCRequestID)
+	requestID := c.Request.Header.Get(iserver.PXHTTPCCRequestID)
 	var result = D2{Ret: code, Msg: msg, Timestamp: time.Now().Unix(), RequestID: requestID}
 	if data != nil {
 		result.Data = data[0]
@@ -45,12 +45,12 @@ func GenerateRID() string {
 // g.Use(RequestIDMiddleware())
 func RequestIDMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		rid := c.Request.Header.Get(server.PXHTTPCCRequestID)
+		rid := c.Request.Header.Get(iserver.PXHTTPCCRequestID)
 		if rid == "" {
 			rid = GenerateRID()
-			c.Request.Header.Set(server.PXHTTPCCRequestID, rid)
+			c.Request.Header.Set(iserver.PXHTTPCCRequestID, rid)
 		}
-		c.Writer.Header().Set(server.PXHTTPCCRequestID, rid)
-		c.Set(server.ContextRequestID, rid)
+		c.Writer.Header().Set(iserver.PXHTTPCCRequestID, rid)
+		c.Set(iserver.ContextRequestID, rid)
 	}
 }

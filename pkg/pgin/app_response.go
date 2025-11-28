@@ -65,14 +65,14 @@ func Bomb(c *gin.Context, msg string, v ...interface{}) {
 	customResponse(c, http.StatusInternalServerError, failStatus, errCode, msg, nil)
 }
 
-// OK 成功数据返回
-func OK(c *gin.Context, data interface{}) {
-	customResponse(c, http.StatusOK, successStatus, successAction, "", data)
-}
-
 // Success 成功返回
-func Success(c *gin.Context) {
-	customResponse(c, http.StatusOK, successStatus, successAction, "success", nil)
+func Success(c *gin.Context, d ...interface{}) {
+	switch len(d) {
+	case 0:
+		customResponse(c, http.StatusOK, successStatus, successAction, "success", nil)
+	default:
+		customResponse(c, http.StatusOK, successStatus, successAction, "", d[0])
+	}
 }
 
 // Assert 条件断言

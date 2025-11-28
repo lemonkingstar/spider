@@ -1,4 +1,4 @@
-package server
+package iserver
 
 import "net/http"
 

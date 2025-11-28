@@ -1,4 +1,4 @@
-package server
+package iserver
 
 type Server interface {
 	// Name is the server name.

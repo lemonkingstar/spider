@@ -9,12 +9,12 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/lemonkingstar/spider/pkg/iserver"
+	"github.com/lemonkingstar/spider/pkg/iworker"
 	"github.com/lemonkingstar/spider/pkg/pconf"
 	"github.com/lemonkingstar/spider/pkg/perror"
 	"github.com/lemonkingstar/spider/pkg/plog"
 	"github.com/lemonkingstar/spider/pkg/psafe"
-	"github.com/lemonkingstar/spider/pkg/server"
-	"github.com/lemonkingstar/spider/pkg/worker"
 	"github.com/sevlyar/go-daemon"
 	"github.com/spf13/cobra"
 )
@@ -24,8 +24,8 @@ var (
 )
 
 type Application struct {
-	servers      []server.Server
-	workers      []worker.Worker
+	servers      []iserver.Server
+	workers      []iworker.Worker
 	startups     []func() error
 	beforeStart  func()
 	afterStart   func()
@@ -53,12 +53,12 @@ func (app *Application) Startup(fns ...func() error) *Application {
 	return app
 }
 
-func (app *Application) Server(s ...server.Server) *Application {
+func (app *Application) Server(s ...iserver.Server) *Application {
 	app.servers = append(app.servers, s...)
 	return app
 }
 
-func (app *Application) Worker(w ...worker.Worker) *Application {
+func (app *Application) Worker(w ...iworker.Worker) *Application {
 	app.workers = append(app.workers, w...)
 	return app
 }
@@ -153,7 +153,7 @@ func (app *Application) Run() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	for _, s := range app.servers {
-		go func(server server.Server) {
+		go func(server iserver.Server) {
 			if err := server.Start(); err != nil {
 				startErr.Do(func() {
 					logger.Errorf("server start error: %v", err)
@@ -163,7 +163,7 @@ func (app *Application) Run() {
 		}(s)
 	}
 	for _, w := range app.workers {
-		go func(worker worker.Worker) {
+		go func(worker iworker.Worker) {
 			if err := worker.Start(); err != nil {
 				startErr.Do(func() {
 					logger.Errorf("worker start error: %v", err)

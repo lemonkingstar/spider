@@ -1,4 +1,4 @@
-package worker
+package iworker
 
 type Worker interface {
 	// Start starts worker.

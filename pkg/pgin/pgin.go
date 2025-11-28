@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lemonkingstar/spider/pkg/iserver"
 	"github.com/lemonkingstar/spider/pkg/pgin/middleware"
 	"github.com/lemonkingstar/spider/pkg/plog"
 	"github.com/lemonkingstar/spider/pkg/server"
@@ -30,13 +31,13 @@ func Default() *GinServer {
 }
 
 type GinServer struct {
-	opt    *server.Delegate
+	opt    *iserver.Delegate
 	engine *gin.Engine
 	srv    *http.Server
 }
 
-func (s *GinServer) Init(fns ...server.DelegateOption) {
-	s.opt = server.NewDelegate(fns...)
+func (s *GinServer) Init(fns ...iserver.DelegateOption) {
+	s.opt = iserver.NewDelegate(fns...)
 }
 
 func (s *GinServer) Name() string {
