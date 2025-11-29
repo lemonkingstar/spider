@@ -20,16 +20,15 @@ var (
 	masterNodeKey   = "%s:node:master"
 	electionNodeKey = "%s:node:election"
 	lockKey         = "%s:node:lock"
-	// 节点标识
-	nodeIdentity = ""
+	nodeIdentity    = ""
 
 	client predis.Client
 )
 
-// ID get the node identity
+// ID gets the node identity.
 func ID() string { return nodeIdentity }
 
-// Get check is master node
+// Get checks is master node.
 func Get() bool {
 	nid, err := client.Get(context.Background(), masterNodeKey).Result()
 	if err != nil {
@@ -52,7 +51,7 @@ func Run(prefix string) {
 	lockKey = fmt.Sprintf(lockKey, prefix)
 	nodeIdentity = buildSnowflakeUUID()
 	if client = predis.Default(); client == nil {
-		logger.Fatalf("default client not found, exit.")
+		logger.Fatalf("redis client not found, exit.")
 		return
 	}
 	register()
@@ -76,7 +75,7 @@ func Run(prefix string) {
 	})
 }
 
-// register current node info
+// register current node info.
 func register() {
 	ip, _ := pnet.GetInternalIP()
 	hostname, _ := os.Hostname()
@@ -108,7 +107,7 @@ func setMaster() {
 			return
 		}
 		sort.Strings(nodes)
-		// 直接更新master节点
+		// update master node
 		if err := client.Set(ctx, masterNodeKey, nodes[0], time.Hour).Err(); err != nil {
 			logger.Errorf("set master error: %s, %s", err.Error(), nodes[0])
 		}
@@ -128,8 +127,8 @@ func Exec(f func()) {
 	f()
 }
 
-// StrictExec 严格获取锁执行
-// 针对某些不能多个节点同时执行的场景
+// StrictExec strictly acquire lock execution.
+// For certain scenarios where multiple nodes cannot execute simultaneously.
 func StrictExec(key string, f func()) {
 	pc, _, _, _ := runtime.Caller(1)
 	n := runtime.FuncForPC(pc).Name()
@@ -146,7 +145,7 @@ func StrictExec(key string, f func()) {
 	f()
 }
 
-// NodeList get all node list
+// NodeList gets all node list.
 func NodeList() []string {
 	nodes := make([]string, 0)
 	retry := 0
@@ -172,7 +171,7 @@ func NodeList() []string {
 	return nodes
 }
 
-// NodeExist check node exist
+// NodeExist checks node exist.
 func NodeExist(node string) bool {
 	key := fmt.Sprintf("%s:%s", electionNodeKey, node)
 	if err := client.Get(context.Background(), key).Err(); err != nil {
