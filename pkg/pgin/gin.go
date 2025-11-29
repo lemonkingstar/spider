@@ -48,7 +48,7 @@ func (s *GinServer) Start() error {
 		Addr:    s.opt.Address,
 		Handler: s.engine,
 	}
-	logger.Infof("server[%s] running at: %s", s.Name(), s.srv.Addr)
+	logger.Infof("server [%s] running at: %s", s.Name(), s.srv.Addr)
 	if err := s.srv.ListenAndServe(); err != nil {
 		logger.Errorf("listen error: %v", err)
 		return err
