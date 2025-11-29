@@ -5,11 +5,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/streadway/amqp"
-
 	"github.com/lemonkingstar/spider/pkg/plog"
 	"github.com/lemonkingstar/spider/pkg/psafe"
 	"github.com/lemonkingstar/spider/pkg/putil"
+	"github.com/streadway/amqp"
 )
 
 var (

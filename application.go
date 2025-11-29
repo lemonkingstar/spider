@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 	"sync"
 	"syscall"
 
@@ -108,7 +109,12 @@ func (app *Application) Execute() {
 		// the work function
 		if RootParam.VersionFlag {
 			// show version
-			fmt.Println(pconf.VERSION)
+			fmt.Println(iserver.GetAppName(),
+				iserver.GetVersion(),
+				iserver.GetBuildBranch(),
+				iserver.GetBuildCommit(),
+				iserver.GetBuildTime(),
+				runtime.Version())
 			os.Exit(0)
 		} else if RootParam.DaemonFlag {
 			// start as daemon

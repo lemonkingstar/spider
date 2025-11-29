@@ -14,8 +14,8 @@ type Server interface {
 // Delegate contains server option.
 // Can be expanded to include more functions.
 type Delegate struct {
-	ServiceName string
-	Address     string
+	ServerName string
+	Address    string
 }
 
 type DelegateOption func(*Delegate)
@@ -30,9 +30,10 @@ func NewDelegate(fns ...DelegateOption) *Delegate {
 	return opt
 }
 
-func ServiceName(name string) DelegateOption {
+func ServerName(name string) DelegateOption {
+	AppName = name
 	return func(d *Delegate) {
-		d.ServiceName = name
+		d.ServerName = name
 	}
 }
 

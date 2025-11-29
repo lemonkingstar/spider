@@ -4,10 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lemonkingstar/spider/pkg/iserver"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-
-	"github.com/lemonkingstar/spider/pkg/pbase"
 )
 
 // a global register which is used to collect metrics we need.
@@ -51,8 +50,8 @@ type Service struct {
 // NewService returns new metrics service
 func NewService() *Service {
 	registry := prometheus.NewRegistry()
-	register := prometheus.WrapRegistererWith(prometheus.Labels{LabelProcessName: server.GetIdentification(),
-		LabelHost: server.GetServerInstance()}, registry)
+	register := prometheus.WrapRegistererWith(prometheus.Labels{LabelProcessName: iserver.GetAppName(),
+		LabelHost: ""}, registry)
 
 	// set up global register
 	globalRegister = register

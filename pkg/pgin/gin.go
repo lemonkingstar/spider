@@ -9,7 +9,6 @@ import (
 	"github.com/lemonkingstar/spider/pkg/iserver"
 	"github.com/lemonkingstar/spider/pkg/pgin/middleware"
 	"github.com/lemonkingstar/spider/pkg/plog"
-	"github.com/lemonkingstar/spider/pkg/server"
 )
 
 var (
@@ -41,7 +40,7 @@ func (s *GinServer) Init(fns ...iserver.DelegateOption) {
 }
 
 func (s *GinServer) Name() string {
-	return s.opt.ServiceName
+	return s.opt.ServerName
 }
 
 func (s *GinServer) Start() error {

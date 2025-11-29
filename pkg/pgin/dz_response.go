@@ -7,7 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/lemonkingstar/spider/pkg/server"
+	"github.com/lemonkingstar/spider/pkg/iserver"
 	"github.com/rs/xid"
 	"go.uber.org/zap"
 )

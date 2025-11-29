@@ -6,12 +6,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lemonkingstar/spider/pkg/plog"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
-
-	"github.com/lemonkingstar/spider/pkg/plog"
 )
 
 type Config struct {

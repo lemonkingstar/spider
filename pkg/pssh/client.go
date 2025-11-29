@@ -9,9 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"golang.org/x/crypto/ssh"
-
 	"github.com/lemonkingstar/spider/pkg/psafe"
+	"golang.org/x/crypto/ssh"
 )
 
 type ClientOptions struct {

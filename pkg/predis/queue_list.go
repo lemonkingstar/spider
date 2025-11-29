@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	
 	"github.com/lemonkingstar/spider/pkg/plog"
 	"github.com/lemonkingstar/spider/pkg/psafe"
 )

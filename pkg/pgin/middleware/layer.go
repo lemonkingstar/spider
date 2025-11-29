@@ -5,8 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/lemonkingstar/spider/pkg/pbase"
+	"github.com/lemonkingstar/spider/pkg/iserver"
 	"github.com/lemonkingstar/spider/pkg/pgin/pginutil"
 	"github.com/lemonkingstar/spider/pkg/plog"
 )
@@ -29,7 +28,7 @@ func LayerMiddleware(detail bool) gin.HandlerFunc {
 			time.Since(t)/time.Millisecond,
 			pginutil.GetRemoteIP(c),
 			c.Request.UserAgent(),
-			server.GetUser(c.Request.Header),
+			iserver.GetUser(c.Request.Header),
 			body,
 		)
 	}

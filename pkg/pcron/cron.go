@@ -3,10 +3,9 @@ package pcron
 import (
 	"fmt"
 
-	"github.com/robfig/cron/v3"
-
 	"github.com/lemonkingstar/spider/pkg/phash"
 	"github.com/lemonkingstar/spider/pkg/pmaster"
+	"github.com/robfig/cron/v3"
 )
 
 func New() *CronServer {

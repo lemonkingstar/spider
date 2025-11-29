@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lemonkingstar/spider/pkg/pbase"
+	"github.com/lemonkingstar/spider/pkg/iserver"
 	"github.com/lemonkingstar/spider/pkg/pnet"
 	"github.com/lemonkingstar/spider/pkg/predis"
 	"github.com/lemonkingstar/spider/pkg/psafe"
@@ -45,7 +45,7 @@ func Unregister() {
 
 func Run(prefix string) {
 	if prefix == "" {
-		prefix = server.SpiderApp
+		prefix = iserver.SpiderApp
 	}
 	masterNodeKey = fmt.Sprintf(masterNodeKey, prefix)
 	electionNodeKey = fmt.Sprintf(electionNodeKey, prefix)
