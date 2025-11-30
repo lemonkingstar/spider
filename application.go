@@ -109,12 +109,11 @@ func (app *Application) Execute() {
 		// the work function
 		if RootParam.VersionFlag {
 			// show version
-			fmt.Println(iserver.GetAppName(),
-				iserver.GetVersion(),
-				iserver.GetBuildBranch(),
-				iserver.GetBuildCommit(),
-				iserver.GetBuildTime(),
-				runtime.Version())
+			fmt.Println(iserver.GetAppName())
+			fmt.Println("version:", iserver.GetVersion())
+			fmt.Println("branch:", iserver.GetBuildBranch())
+			fmt.Println("commit:", iserver.GetBuildCommit())
+			fmt.Println("golang version:", runtime.Version())
 			os.Exit(0)
 		} else if RootParam.DaemonFlag {
 			// start as daemon
