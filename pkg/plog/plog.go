@@ -121,17 +121,23 @@ func (f *stdFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// append log time
 	output = strings.ReplaceAll(output, f.fDateCode, entry.Time.Format(f.TimestampFormat))
 	if entry.HasCaller() {
-		// append file/line
+		// append file/line info
 		callerMessage := fmt.Sprintf("%s/%s:%d", entry.Caller.Function,
 			filepath.Base(entry.Caller.File), entry.Caller.Line)
-		output = strings.ReplaceAll(output, f.fCallerCode, callerMessage)
+		output = strings.Replace(output, f.fCallerCode, callerMessage, 1)
 	}
-	for k, v := range entry.Data {
-		// append fields
-		output = fmt.Sprintf("%s, %s: %v", output, k, v)
+	if len(entry.Data) > 0 {
+		fieldMessage := make([]string, 0, len(entry.Data))
+		for k, v := range entry.Data {
+			fieldMessage = append(fieldMessage, fmt.Sprintf("%s: %v", k, v))
+		}
+		// append fields info before message
+		output = strings.Replace(output, f.fMessageCode,
+			fmt.Sprintf("[ %s ] %s", strings.Join(fieldMessage, ","), f.fMessageCode), 1)
 	}
+
 	// append message
-	output = strings.ReplaceAll(output, f.fMessageCode, entry.Message)
+	output = strings.Replace(output, f.fMessageCode, entry.Message, 1)
 	output += "\n"
 	return []byte(output), nil
 }
