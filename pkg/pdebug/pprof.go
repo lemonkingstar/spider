@@ -17,12 +17,15 @@ type PProfServer struct {
 
 func (s *PProfServer) Handler() http.Handler {
 	mux := http.NewServeMux()
-	// same as std pprof
+	// std pprof
 	mux.HandleFunc("debug/pprof/", pprof.Index)
 	mux.HandleFunc("debug/pprof/cmdline", pprof.Cmdline)
 	mux.HandleFunc("debug/pprof/profile", pprof.Profile)
 	mux.HandleFunc("debug/pprof/symbol", pprof.Symbol)
 	mux.HandleFunc("debug/pprof/trace", pprof.Trace)
+	// custom debug
+	mux.HandleFunc("/debug/system", system)
+	mux.HandleFunc("/debug/version", version)
 	return mux
 }
 
@@ -58,8 +61,6 @@ func (s *PProfServer) Stop() error {
 }
 
 func (s *PProfServer) GracefulStop() error {
-	// The context is used to inform the server it has 5 seconds to finish
-	// the request it is currently handling
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
