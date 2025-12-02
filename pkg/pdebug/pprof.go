@@ -10,6 +10,8 @@ import (
 	"github.com/lemonkingstar/spider/pkg/plog"
 )
 
+func NewServer() *PProfServer { return &PProfServer{} }
+
 type PProfServer struct {
 	opt *iserver.Delegate
 	srv *http.Server
