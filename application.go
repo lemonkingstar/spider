@@ -25,13 +25,15 @@ var (
 )
 
 type Application struct {
-	servers     []iserver.Server
-	workers     []iworker.Worker
-	startups    []func() error
-	beforeStart func()
-	afterStart  func()
-	beforeStop  func()
-	afterStop   func()
+	servers       []iserver.Server
+	workers       []iworker.Worker
+	startups      []func() error
+	beforeStart   func()
+	afterStart    func()
+	beforeStartup func()
+	afterStartup  func()
+	beforeStop    func()
+	afterStop     func()
 }
 
 var (
@@ -59,6 +61,16 @@ func (app *Application) Server(s ...iserver.Server) *Application {
 
 func (app *Application) Worker(w ...iworker.Worker) *Application {
 	app.workers = append(app.workers, w...)
+	return app
+}
+
+func (app *Application) BeforeStartup(fn func()) *Application {
+	app.beforeStartup = fn
+	return app
+}
+
+func (app *Application) AfterStartup(fn func()) *Application {
+	app.afterStartup = fn
 	return app
 }
 
@@ -139,9 +151,15 @@ func (app *Application) Execute() {
 }
 
 func (app *Application) Run() {
+	if app.beforeStartup != nil {
+		app.beforeStartup()
+	}
 	if err := perror.SerialUntilError(app.startups...)(); err != nil {
 		logger.Errorf("startup error: %v", err)
 		return
+	}
+	if app.afterStartup != nil {
+		app.afterStartup()
 	}
 	// server&worker
 	startErr := sync.Once{}
