@@ -25,24 +25,22 @@ var (
 )
 
 type Application struct {
-	servers      []iserver.Server
-	workers      []iworker.Worker
-	startups     []func() error
-	beforeStart  func()
-	afterStart   func()
-	beforeStop   func()
-	afterStop    func()
-	forceRestart bool
-	argsFunc     func()
+	servers     []iserver.Server
+	workers     []iworker.Worker
+	startups    []func() error
+	beforeStart func()
+	afterStart  func()
+	beforeStop  func()
+	afterStop   func()
 }
 
 var (
-	RootCmd = &cobra.Command{
+	command = &cobra.Command{
 		Use:     filepath.Base(os.Args[0]),
 		Version: "",
 	}
 
-	RootParam = struct {
+	CommandParam = struct {
 		ConfigFile  string
 		VersionFlag bool
 		DaemonFlag  bool
@@ -84,30 +82,22 @@ func (app *Application) AfterStop(fn func()) *Application {
 	return app
 }
 
-func (app *Application) ArgsFunc(fn func()) *Application {
-	app.argsFunc = fn
-	return app
-}
-
 func (app *Application) Execute() {
 	if app.beforeStart != nil {
 		app.beforeStart()
 	}
-	RootCmd.PersistentFlags().StringVarP(&RootParam.ConfigFile, "config-file", "c", "", "config file")
-	RootCmd.PersistentFlags().BoolVarP(&RootParam.VersionFlag, "version", "v", false, "show version")
-	RootCmd.PersistentFlags().BoolVarP(&RootParam.DaemonFlag, "daemon", "d", false, "start as daemon")
-	if app.argsFunc != nil {
-		app.argsFunc()
-	}
-	RootCmd.SetHelpFunc(func(*cobra.Command, []string) {
+	command.PersistentFlags().StringVarP(&CommandParam.ConfigFile, "config-file", "c", "", "config file")
+	command.PersistentFlags().BoolVarP(&CommandParam.VersionFlag, "version", "v", false, "show version")
+	command.PersistentFlags().BoolVarP(&CommandParam.DaemonFlag, "daemon", "d", false, "start as daemon")
+	command.SetHelpFunc(func(*cobra.Command, []string) {
 		// print usage info
-		RootCmd.Usage()
+		command.Usage()
 		os.Exit(0)
 	})
 
-	RootCmd.Run = func(cmd *cobra.Command, args []string) {
+	command.Run = func(cmd *cobra.Command, args []string) {
 		// the work function
-		if RootParam.VersionFlag {
+		if CommandParam.VersionFlag {
 			// show version
 			fmt.Println(iserver.GetAppName())
 			fmt.Println("version:", iserver.GetVersion())
@@ -115,7 +105,7 @@ func (app *Application) Execute() {
 			fmt.Println("commit:", iserver.GetBuildCommit())
 			fmt.Println("golang version:", runtime.Version())
 			os.Exit(0)
-		} else if RootParam.DaemonFlag {
+		} else if CommandParam.DaemonFlag {
 			// start as daemon
 			dir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
 			ctx := &daemon.Context{
@@ -131,24 +121,24 @@ func (app *Application) Execute() {
 			}
 			defer ctx.Release()
 		}
-		app.Run()
 	}
-
-	err := RootCmd.Execute()
+	err := command.Execute()
 	if err != nil {
 		logger.Errorf("command execute error: %v", err)
 		os.Exit(-1)
 	}
-}
-
-func (app *Application) Run() {
-	if RootParam.ConfigFile != "" {
-		pconf.SetConfigFile(RootParam.ConfigFile)
+	// parse config
+	if CommandParam.ConfigFile != "" {
+		pconf.SetConfigFile(CommandParam.ConfigFile)
 	}
 	if err := pconf.ReadInConfig(); err != nil {
 		logger.Errorf("load config error: %v", err)
 		return
 	}
+	app.Run()
+}
+
+func (app *Application) Run() {
 	if err := perror.SerialUntilError(app.startups...)(); err != nil {
 		logger.Errorf("startup error: %v", err)
 		return
