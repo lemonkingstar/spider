@@ -37,10 +37,13 @@ type GinServer struct {
 
 func (s *GinServer) Init(fns ...iserver.DelegateOption) {
 	s.opt = iserver.NewDelegate(fns...)
+	if s.opt.Address == "" {
+		s.opt.Address = ":8080"
+	}
 }
 
 func (s *GinServer) Name() string {
-	return s.opt.ServerName
+	return s.opt.Name
 }
 
 func (s *GinServer) Start() error {
@@ -48,7 +51,7 @@ func (s *GinServer) Start() error {
 		Addr:    s.opt.Address,
 		Handler: s.engine,
 	}
-	logger.Infof("server [%s] running at: %s", s.Name(), s.srv.Addr)
+	logger.Infof("server(%s) running at: %s", s.Name(), s.srv.Addr)
 	if err := s.srv.ListenAndServe(); err != nil {
 		logger.Errorf("listen error: %v", err)
 		return err
@@ -70,7 +73,7 @@ func (s *GinServer) GracefulStop() error {
 	defer cancel()
 
 	if err := s.srv.Shutdown(ctx); err != nil {
-		logger.Errorf("Server forced to shutdown: %v", err)
+		logger.Errorf("server forced to shutdown: %v", err)
 		return nil
 	}
 

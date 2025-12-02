@@ -14,30 +14,27 @@ type Server interface {
 // Delegate contains server option.
 // Can be expanded to include more functions.
 type Delegate struct {
-	ServerName string
-	Address    string
+	Name    string
+	Address string
 }
 
 type DelegateOption func(*Delegate)
 
 func NewDelegate(fns ...DelegateOption) *Delegate {
-	opt := &Delegate{
-		Address: "0.0.0.0:8080",
-	}
+	opt := &Delegate{}
 	for _, f := range fns {
 		f(opt)
 	}
 	return opt
 }
 
-func ServerName(name string) DelegateOption {
-	AppName = name
+func WithName(name string) DelegateOption {
 	return func(d *Delegate) {
-		d.ServerName = name
+		d.Name = name
 	}
 }
 
-func Address(addr string) DelegateOption {
+func WithAddress(addr string) DelegateOption {
 	return func(o *Delegate) {
 		o.Address = addr
 	}
