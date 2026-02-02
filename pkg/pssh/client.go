@@ -13,7 +13,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-type ClientOptions struct {
+type Option struct {
 	// Addr Host:Port
 	Host string
 	Port int
@@ -26,8 +26,7 @@ type ClientOptions struct {
 	KeyPassphrase []byte // rsa key密码
 }
 
-func (p *ClientOptions) init() {
-	// do options check
+func (p *Option) validate() {
 	if p.Port <= 0 {
 		p.Port = 22
 	}
@@ -37,7 +36,7 @@ func (p *ClientOptions) init() {
 }
 
 type Client struct {
-	opt *ClientOptions
+	opt *Option
 
 	// Client session
 	client  *ssh.Client
@@ -45,8 +44,8 @@ type Client struct {
 	sync.Mutex
 }
 
-func NewClient(opt *ClientOptions) *Client {
-	opt.init()
+func NewClient(opt *Option) *Client {
+	opt.validate()
 	return &Client{
 		opt: opt,
 	}
