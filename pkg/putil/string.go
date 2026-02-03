@@ -9,8 +9,7 @@ import (
 	"github.com/matoous/go-nanoid/v2"
 )
 
-// GetRandString 随机生成指定长度的字符串
-func GetRandString(length int) string {
+func GenRandString(length int) string {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	bytes := make([]byte, length)
 	for i := 0; i < length; i++ {
@@ -27,7 +26,7 @@ func Uuid(prefix string) string {
 	var id string
 	u, err := uuid.NewRandom()
 	if err != nil {
-		id = GetRandString(36)
+		id = GenRandString(36)
 	} else {
 		id = u.String()
 	}
@@ -40,7 +39,7 @@ func Uuid(prefix string) string {
 func ShortUuid(prefix string) string {
 	id, err := gonanoid.New(17)
 	if err != nil {
-		id = GetRandString(17)
+		id = GenRandString(17)
 	}
 	if prefix != "" {
 		id = fmt.Sprintf("%s-%s", prefix, id)

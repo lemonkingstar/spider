@@ -1,7 +1,6 @@
 package prmq
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -203,7 +202,7 @@ func (c *client) Get(f func([]byte) error) {
 func (c *client) PeriodicConsume(hf func([]byte) error, cf func() bool, periodic int) {
 	psafe.Go(func() {
 		consume := func(hf func([]byte) error, cf func() bool, periodic int) (error, bool) {
-			consumer := fmt.Sprintf("prmq-%s", putil.UUID())
+			consumer := putil.Uuid("prmq")
 			ticker := time.NewTicker(time.Duration(periodic) * time.Second)
 			defer ticker.Stop()
 
