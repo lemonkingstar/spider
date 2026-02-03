@@ -26,7 +26,7 @@ func Uuid(prefix string) string {
 	var id string
 	u, err := uuid.NewRandom()
 	if err != nil {
-		id = GenRandString(36)
+		id = GenRandString(32)
 	} else {
 		id = u.String()
 	}
