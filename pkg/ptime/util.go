@@ -16,6 +16,9 @@ const (
 // ParseTime parses a formatted string to a time, use the system's local time zone.
 func ParseTime(s string) (time.Time, error) { return time.ParseInLocation(TimeLayout, s, time.Local) }
 
+// ParseTimeRFC3339 parses a formatted string to a time, auto analysis the time zone.
+func ParseTimeRFC3339(s string) (time.Time, error) { return time.Parse(RFC3339Layout, s) }
+
 // ParseDate parses a formatted string to a time, use the system's local time zone.
 func ParseDate(s string) (time.Time, error) { return time.ParseInLocation(DateLayout, s, time.Local) }
 
@@ -54,10 +57,11 @@ func Utc2Local(utcStr string) (string, error) {
 }
 
 // TimeElapsed calculates time elapsed.
-func TimeElapsed(name string) func() {
+func TimeElapsed(name string) func() int64 {
 	start := time.Now()
-	return func() {
+	return func() int64 {
 		millisecond := time.Since(start) / time.Millisecond
 		plog.Infof("[Time Elapsed / %s] took %dms.", name, millisecond)
+		return int64(millisecond)
 	}
 }
