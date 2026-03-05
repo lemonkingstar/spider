@@ -13,6 +13,7 @@ import (
 // QueryList_ 通用列表查询接口
 // Deprecated
 // e.g. 在 db/models层调用
+//
 //	var total int64
 //	var err error
 //	var students []Student
@@ -51,14 +52,14 @@ func QueryList_(c *gin.Context, db *gorm.DB, searchFields []string,
 		}
 	}
 	q := &PaginationQuery{
-		Page: page,
-		PageSize: pageSize,
-		Search: search,
+		Page:         page,
+		PageSize:     pageSize,
+		Search:       search,
 		SearchFields: searchFields,
-		Order: order,
-		Filter: filter,
+		Order:        order,
+		Filter:       filter,
 
-		db: db,
+		db:    db,
 		model: models,
 	}
 
@@ -88,21 +89,22 @@ func queryBoolDefault(c *gin.Context, key string, d bool) bool {
 /********************************************************************************************/
 
 type queryPara struct {
-	Page 		int	   `form:"page"`
-	PageSize	int	   `form:"page_size"`
-	Search 		string `form:"search"`
-	Order 		string `form:"order"`
+	Page     int    `form:"page"`
+	PageSize int    `form:"page_size"`
+	Search   string `form:"search"`
+	Order    string `form:"order"`
 	// 精确匹配优先使用 filter_map
-	FilterMap   map[string]interface{} `form:"filter_map"`
+	FilterMap map[string]interface{} `form:"filter_map"`
 	// 其他过滤字段直接透传
-	FilterOr   		map[string]interface{}	`form:"filter_or_map"`
-	NotFilter   	map[string]interface{}	`form:"not_filter_map"`
-	GreaterThan 	map[string]interface{}	`form:"gte_map"`
-	LessThan 		map[string]interface{}	`form:"lte_map"`
+	FilterOr    map[string]interface{} `form:"filter_or_map"`
+	NotFilter   map[string]interface{} `form:"not_filter_map"`
+	GreaterThan map[string]interface{} `form:"gte_map"`
+	LessThan    map[string]interface{} `form:"lte_map"`
 }
 
 // QueryList 通用列表查询接口
 // e.g. 在 db/models层调用
+//
 //	var total int64
 //	var err error
 //	var students []Student
@@ -152,7 +154,9 @@ func GetRequestQuery(c *gin.Context, searchFields []string, filterFields map[str
 	for k, v := range filterFields {
 		q := k
 		if transFields != nil {
-			if k2, ok := transFields[k]; ok { q = k2 }
+			if k2, ok := transFields[k]; ok {
+				q = k2
+			}
 		}
 
 		str := ""
@@ -180,7 +184,7 @@ func GetRequestQuery(c *gin.Context, searchFields []string, filterFields map[str
 					filter[k] = tmp
 				}
 			case reflect.Bool:
-				tmp := !(str == "" || str == "0" || str == "no" || str == "false" || str == "none")
+				tmp := !(str == "0" || str == "no" || str == "false" || str == "none")
 				filter[k] = tmp
 			default:
 				// string
@@ -224,21 +228,31 @@ func GetRequestQuery(c *gin.Context, searchFields []string, filterFields map[str
 			}
 		}
 	}
-	if order == "" { order = "-updated_at" }
+	if order == "" {
+		order = "-updated_at"
+	}
 
 	q := &PaginationQuery{
-		Page: para.Page,
-		PageSize: para.PageSize,
-		Search: para.Search,
+		Page:         para.Page,
+		PageSize:     para.PageSize,
+		Search:       para.Search,
 		SearchFields: searchFields,
-		Order: order,
-		Filter: filter,
-		FilterOr: para.FilterOr, NotFilter: para.NotFilter,
+		Order:        order,
+		Filter:       filter,
+		FilterOr:     para.FilterOr, NotFilter: para.NotFilter,
 		GreaterThan: para.GreaterThan, LessThan: para.LessThan,
 	}
-	if q.FilterOr == nil { q.FilterOr = map[string]interface{}{} }
-	if q.NotFilter == nil { q.NotFilter = map[string]interface{}{} }
-	if q.GreaterThan == nil { q.GreaterThan = map[string]interface{}{} }
-	if q.LessThan == nil { q.LessThan = map[string]interface{}{} }
+	if q.FilterOr == nil {
+		q.FilterOr = map[string]interface{}{}
+	}
+	if q.NotFilter == nil {
+		q.NotFilter = map[string]interface{}{}
+	}
+	if q.GreaterThan == nil {
+		q.GreaterThan = map[string]interface{}{}
+	}
+	if q.LessThan == nil {
+		q.LessThan = map[string]interface{}{}
+	}
 	return q
 }
