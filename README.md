@@ -1,3 +1,3 @@
 # spider
 
-spider is a programming toolkit.
+Spider is a programming toolkit.

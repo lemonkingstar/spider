@@ -103,7 +103,7 @@ type queryPara struct {
 }
 
 // QueryList 通用列表查询接口
-// e.g. 在 db/models层调用
+// e.g.
 //
 //	var total int64
 //	var err error
@@ -129,6 +129,10 @@ func QueryList(c *gin.Context, db *gorm.DB, searchFields []string,
 }
 
 // GetRequestQuery 通用获取请求查询条件
+// 1. searchFields: db模糊匹配字段范围, ["db字段1", "db字段2"]
+// 2. filterFields: db精确匹配字段范围, {"db字段1": "值类型", "db字段2": "值类型"}
+// 3. transFields[可选]: 参数查询字段转换范围, {"db字段1": "ui字段1", "db字段2": "ui字段2"}
+// 4. sortFields[可选]: db排序字段范围, ["db字段1", "db字段2"]
 func GetRequestQuery(c *gin.Context, searchFields []string, filterFields map[string]interface{},
 	value ...interface{}) *PaginationQuery {
 	para := queryPara{
@@ -201,23 +205,23 @@ func GetRequestQuery(c *gin.Context, searchFields []string, filterFields map[str
 
 	order := para.Order
 	if order != "" && len(transFields) > 0 {
-		transFields2 := map[string]string{}
+		transFieldsUI := map[string]string{}
 		for k, v := range transFields {
-			transFields2[v] = k
+			transFieldsUI[v] = k
 		}
 		fields := strings.Split(strings.ReplaceAll(strings.ReplaceAll(order, "+", ""), "-", ""), ",")
-		for _, v := range fields {
-			if v2, ok := transFields2[v]; ok {
-				order = strings.ReplaceAll(order, v, v2)
+		for _, field := range fields {
+			if realField, ok := transFieldsUI[field]; ok {
+				order = strings.ReplaceAll(order, field, realField)
 			}
 		}
 	}
 	if order != "" && len(sortFields) > 0 {
 		fields := strings.Split(strings.ReplaceAll(strings.ReplaceAll(order, "+", ""), "-", ""), ",")
-		for _, v := range fields {
+		for _, field := range fields {
 			exist := false
-			for _, v2 := range sortFields {
-				if v == v2 {
+			for _, sortField := range sortFields {
+				if field == sortField {
 					exist = true
 					break
 				}
