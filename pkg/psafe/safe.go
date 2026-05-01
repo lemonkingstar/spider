@@ -26,9 +26,9 @@ func Go(f func()) {
 	}()
 }
 
-func GoCtx(f func(context.Context), ctx context.Context) {
+func GoCtx(ctx context.Context, f func(context.Context)) {
 	go func() {
-		defer Recover()
+		defer RecoverCtx(ctx)
 		if f != nil {
 			f(ctx)
 		}
@@ -42,7 +42,24 @@ func Call(f func()) {
 	}
 }
 
+func CallCtx(ctx context.Context, f func(ctx context.Context)) {
+	defer RecoverCtx(ctx)
+	if f != nil {
+		f(ctx)
+	}
+}
+
 func Recover(handlers ...func(interface{})) {
+	if err := recover(); err != nil {
+		logger.Errorf("Panic: %v", err)
+		logger.Errorf("Stack:\n %s", debug.Stack())
+		for _, handler := range handlers {
+			handler(err)
+		}
+	}
+}
+
+func RecoverCtx(ctx context.Context, handlers ...func(interface{})) {
 	if err := recover(); err != nil {
 		logger.Errorf("Panic: %v", err)
 		logger.Errorf("Stack:\n %s", debug.Stack())
