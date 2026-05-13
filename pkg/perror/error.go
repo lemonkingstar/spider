@@ -11,7 +11,7 @@ func SerialWithError(fns ...func() error) func() error {
 	return func() error {
 		var errs error
 		for _, fn := range fns {
-			errs = AppendErr(errs, fn())
+			errs = AppendError(errs, fn())
 		}
 		return errs
 	}
@@ -31,7 +31,7 @@ func SerialUntilError(fns ...func() error) func() error {
 	}
 }
 
-func AppendErr(left, right error) error {
+func AppendError(left, right error) error {
 	if left == nil {
 		return right
 	} else if right == nil {
@@ -40,7 +40,7 @@ func AppendErr(left, right error) error {
 	return fmt.Errorf("%w; %v", left, right)
 }
 
-func WrapErr(err error, format string, args ...interface{}) error {
+func WrapError(err error, format string, args ...interface{}) error {
 	if err == nil {
 		return nil
 	}
@@ -50,6 +50,6 @@ func WrapErr(err error, format string, args ...interface{}) error {
 	return fmt.Errorf("%w; %s", err, fmt.Sprintf(format, args...))
 }
 
-func NewErr(msg string) error {
+func NewError(msg string) error {
 	return errors.New(msg)
 }
