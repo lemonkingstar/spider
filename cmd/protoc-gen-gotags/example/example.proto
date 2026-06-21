@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package example;
+
+import "tagger/tagger.proto";
+
+option go_package = "github.com/lemonkingstar/spider/cmd/protoc-gen-gotags/example;example";
+
+message Example {
+  string with_new_tags = 1 [
+    (spider.tagger.tags) = "graphql:withNewTags,optional"
+  ];
+  string with_new_multiple = 2 [
+    (spider.tagger.tags) = "graphql:withNewTags,optional",
+    (spider.tagger.tags) = "xml:multi,omitempty"
+  ];
+
+  optional string replace_default = 3 [
+    (spider.tagger.tags) = "json:replacePrevious"
+  ];
+
+  oneof one_of {
+    option (spider.tagger.oneof_tags) = "graphql:withNewTags,optional";
+    option (spider.tagger.oneof_tags) = "json:withNewTags";
+    string a = 5 [
+      (spider.tagger.tags) = "json:A"
+    ];
+    int32 b_jk = 6 [
+      (spider.tagger.tags) = "json:b_Jk"
+    ];
+  }
+}
+
+message SecondMessage {
+  string with_new_tags = 1 [
+    (spider.tagger.tags) = "graphql:withNewTags,optional"
+  ];
+  string with_new_multiple = 2 [
+    (spider.tagger.tags) = "graphql:withNewTags,optional",
+    (spider.tagger.tags) = "xml:multi,omitempty"
+  ];
+
+  string replace_default = 3 [
+    (spider.tagger.tags) = "json:replacePrevious"
+  ];
+}
+
+message ThirdExample {
+  message InnerExample {
+    string id = 1 [
+      (spider.tagger.tags) = "json:yes"
+    ];
+    int32 yes = 2 [
+      (spider.tagger.tags) = "json:id"
+    ];
+  }
+
+  InnerExample inner_example = 1 [
+    (spider.tagger.tags) = "json:inner"
+  ];
+}

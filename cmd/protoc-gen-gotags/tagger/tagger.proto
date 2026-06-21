@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package spider.tagger;
+
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/lemonkingstar/spider/cmd/protoc-gen-gotags/tagger;tagger";
+
+// Tags are applied at the field level
+extend google.protobuf.FieldOptions {
+  // Multiple Tags can be specified.
+  repeated string tags = 1847939;
+}
+
+extend google.protobuf.OneofOptions {
+  // Multiple Tags can be specified.
+  repeated string oneof_tags = 1847939;
+}

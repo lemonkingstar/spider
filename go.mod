@@ -5,6 +5,7 @@ go 1.24.6
 require (
 	github.com/VictoriaMetrics/metricsql v0.84.8
 	github.com/fatih/structs v1.1.0
+	github.com/fatih/structtag v1.2.0
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/getsentry/sentry-go v0.22.0
 	github.com/gin-contrib/cors v1.7.6
