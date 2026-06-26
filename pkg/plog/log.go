@@ -55,8 +55,9 @@ var (
 
 var (
 	defaultFormatter = &stdFormatter{
+		LogFormat:       defaultLogFormat,
 		TimestampFormat: "2006-01-02 15:04:05",
-		LevelTruncation: true,
+		TruncateLevel:   true,
 	}
 )
 
@@ -74,57 +75,55 @@ func GetLogger() *Logger                              { return logger }
 func WithField(key string, value interface{}) *Entry  { return logger.WithField(key, value) }
 func WithFields(fields map[string]interface{}) *Entry { return logger.WithFields(fields) }
 func SetLevel(l logrus.Level)                         { logger.SetLevel(l) }
-func SetOutput(output io.Writer)                      { logger.SetOutput(output) }
 
-func SetReportCaller(reportCaller bool) {
-	logger.SetReportCaller(reportCaller)
+func SetReportCaller() {
+	logger.SetReportCaller(true)
 	defaultFormatter.LogFormat = fileLineLogFormat
 	defaultFormatter.build()
 }
 
-// SetRotateFile enable circular log files. e.g. logs/*.log.
-func SetRotateFile(file string) {
+// AddRotateFile enable circular log files. e.g. logs/*.log.
+func AddRotateFile(logFile string) {
 	rotate := &rotateFileHook{
 		level:     logger.GetLevel(),
 		formatter: logger.Formatter,
 		logWriter: &lumberjack.Logger{
-			Filename:   file,
+			Filename:   logFile,
 			MaxSize:    50,
 			MaxBackups: 30,
-			MaxAge:     7,
+			MaxAge:     21,
 			LocalTime:  true,
+			Compress:   false,
 		},
 	}
 	logger.AddHook(rotate)
 }
 
 type stdFormatter struct {
-	TimestampFormat string
 	LogFormat       string
-	LevelTruncation bool
+	TimestampFormat string
+	TruncateLevel   bool
 
-	formatContent string
-	fLevelCode    string
-	fDateCode     string
-	fCallerCode   string
-	fMessageCode  string
+	formatContent     string
+	formatLevelCode   string
+	formatDateCode    string
+	formatCallerCode  string
+	formatMessageCode string
 }
 
 func (f *stdFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 	output := f.formatContent
 	level := strings.ToUpper(entry.Level.String())
-	if f.LevelTruncation {
+	if f.TruncateLevel {
 		level = level[:4]
 	}
-	// append log level
-	output = strings.ReplaceAll(output, f.fLevelCode, level)
-	// append log time
-	output = strings.ReplaceAll(output, f.fDateCode, entry.Time.Format(f.TimestampFormat))
+
+	var pairs []string
+	pairs = append(pairs, f.formatLevelCode, level)
+	pairs = append(pairs, f.formatDateCode, entry.Time.Format(f.TimestampFormat))
 	if entry.HasCaller() {
-		// append file/line info
-		callerMessage := fmt.Sprintf("%s/%s:%d", entry.Caller.Function,
-			filepath.Base(entry.Caller.File), entry.Caller.Line)
-		output = strings.Replace(output, f.fCallerCode, callerMessage, 1)
+		callerMessage := fmt.Sprintf("%s:%d", filepath.Base(entry.Caller.File), entry.Caller.Line)
+		pairs = append(pairs, f.formatCallerCode, callerMessage)
 	}
 	if len(entry.Data) > 0 {
 		fieldMessage := make([]string, 0, len(entry.Data))
@@ -132,12 +131,12 @@ func (f *stdFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 			fieldMessage = append(fieldMessage, fmt.Sprintf("%s: %v", k, v))
 		}
 		// append fields info before message
-		output = strings.Replace(output, f.fMessageCode,
-			fmt.Sprintf("[ %s ] %s", strings.Join(fieldMessage, ","), f.fMessageCode), 1)
+		entry.Message = fmt.Sprintf("[ %s ] %s", strings.Join(fieldMessage, ","), entry.Message)
 	}
+	pairs = append(pairs, f.formatMessageCode, entry.Message)
 
-	// append message
-	output = strings.Replace(output, f.fMessageCode, entry.Message, 1)
+	replacer := strings.NewReplacer(pairs...)
+	output = replacer.Replace(output)
 	output += "\n"
 	return []byte(output), nil
 }
@@ -149,14 +148,14 @@ func (f *stdFormatter) build() {
 	if f.TimestampFormat == "" {
 		f.TimestampFormat = defaultTimestampFormat
 	}
-	f.fLevelCode = "%p" + obfuscatedCode + "%"
-	f.fDateCode = "%d" + obfuscatedCode + "%"
-	f.fCallerCode = "%l" + obfuscatedCode + "%"
-	f.fMessageCode = "%m" + obfuscatedCode + "%"
-	f.formatContent = strings.ReplaceAll(f.LogFormat, "%p", f.fLevelCode)
-	f.formatContent = strings.ReplaceAll(f.formatContent, "%d", f.fDateCode)
-	f.formatContent = strings.ReplaceAll(f.formatContent, "%l", f.fCallerCode)
-	f.formatContent = strings.ReplaceAll(f.formatContent, "%m", f.fMessageCode)
+	f.formatLevelCode = "%p" + obfuscatedCode + "%"
+	f.formatDateCode = "%d" + obfuscatedCode + "%"
+	f.formatCallerCode = "%l" + obfuscatedCode + "%"
+	f.formatMessageCode = "%m" + obfuscatedCode + "%"
+	f.formatContent = strings.ReplaceAll(f.LogFormat, "%p", f.formatLevelCode)
+	f.formatContent = strings.ReplaceAll(f.formatContent, "%d", f.formatDateCode)
+	f.formatContent = strings.ReplaceAll(f.formatContent, "%l", f.formatCallerCode)
+	f.formatContent = strings.ReplaceAll(f.formatContent, "%m", f.formatMessageCode)
 }
 
 type rotateFileHook struct {
