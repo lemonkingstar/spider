@@ -106,11 +106,19 @@ func replaceTag(astField *ast.Field, protoField *protogen.Field, protoOneof *pro
 	modified := false
 	var strTags []string
 	if protoField != nil {
-		ext := proto.GetExtension(protoField.Desc.Options(), tagger.E_Tags)
-		strTags, _ = ext.([]string)
+		strTags = proto.GetExtension(protoField.Desc.Options(), tagger.E_Tags).([]string)
+		disableOmitempty, _ := proto.GetExtension(protoField.Parent.Desc.Options(), tagger.E_DisableOmitempty).(bool)
+		if disableOmitempty {
+			tags.DeleteOptions("json", "omitempty")
+			modified = true
+		}
 	} else if protoOneof != nil {
-		ext := proto.GetExtension(protoOneof.Desc.Options(), tagger.E_OneofTags)
-		strTags, _ = ext.([]string)
+		strTags = proto.GetExtension(protoOneof.Desc.Options(), tagger.E_OneofTags).([]string)
+		disableOmitempty, _ := proto.GetExtension(protoOneof.Parent.Desc.Options(), tagger.E_DisableOmitempty).(bool)
+		if disableOmitempty {
+			tags.DeleteOptions("json", "omitempty")
+			modified = true
+		}
 	}
 	for _, t := range strTags {
 		pair := strings.SplitN(t, ":", 2)

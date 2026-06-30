@@ -59,3 +59,22 @@ message ThirdExample {
     (spider.tagger.tags) = "json:inner"
   ];
 }
+
+message FourthExample {
+  option (spider.tagger.disable_omitempty) = true;
+
+  string with_new_tags = 1;
+  string with_new_multiple = 2 [
+    (spider.tagger.tags) = "graphql:withNewTags,optional",
+    (spider.tagger.tags) = "json:with_new_multiple,optional"
+  ];
+
+  optional string replace_default = 3 [
+    (spider.tagger.tags) = "json:replacePrevious"
+  ];
+
+  oneof one_of {
+    string a = 5;
+    int32 b_jk = 6;
+  }
+}

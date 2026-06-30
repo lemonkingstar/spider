@@ -23,6 +23,14 @@ const (
 
 var file_tagger_proto_extTypes = []protoimpl.ExtensionInfo{
 	{
+		ExtendedType:  (*descriptorpb.MessageOptions)(nil),
+		ExtensionType: (*bool)(nil),
+		Field:         1847939,
+		Name:          "spider.tagger.disable_omitempty",
+		Tag:           "varint,1847939,opt,name=disable_omitempty",
+		Filename:      "tagger.proto",
+	},
+	{
 		ExtendedType:  (*descriptorpb.FieldOptions)(nil),
 		ExtensionType: ([]string)(nil),
 		Field:         1847939,
@@ -40,12 +48,20 @@ var file_tagger_proto_extTypes = []protoimpl.ExtensionInfo{
 	},
 }
 
+// Extension fields to descriptorpb.MessageOptions.
+var (
+	// Disable json omitempty.
+	//
+	// optional bool disable_omitempty = 1847939;
+	E_DisableOmitempty = &file_tagger_proto_extTypes[0]
+)
+
 // Extension fields to descriptorpb.FieldOptions.
 var (
 	// Multiple Tags can be specified.
 	//
 	// repeated string tags = 1847939;
-	E_Tags = &file_tagger_proto_extTypes[0]
+	E_Tags = &file_tagger_proto_extTypes[1]
 )
 
 // Extension fields to descriptorpb.OneofOptions.
@@ -53,29 +69,32 @@ var (
 	// Multiple Tags can be specified.
 	//
 	// repeated string oneof_tags = 1847939;
-	E_OneofTags = &file_tagger_proto_extTypes[1]
+	E_OneofTags = &file_tagger_proto_extTypes[2]
 )
 
 var File_tagger_proto protoreflect.FileDescriptor
 
 const file_tagger_proto_rawDesc = "" +
 	"\n" +
-	"\ftagger.proto\x12\rspider.tagger\x1a google/protobuf/descriptor.proto:3\n" +
+	"\ftagger.proto\x12\rspider.tagger\x1a google/protobuf/descriptor.proto:N\n" +
+	"\x11disable_omitempty\x12\x1f.google.protobuf.MessageOptions\x18\x83\xe5p \x01(\bR\x10disableOmitempty:3\n" +
 	"\x04tags\x12\x1d.google.protobuf.FieldOptions\x18\x83\xe5p \x03(\tR\x04tags:>\n" +
 	"\n" +
 	"oneof_tags\x12\x1d.google.protobuf.OneofOptions\x18\x83\xe5p \x03(\tR\toneofTagsBEZCgithub.com/lemonkingstar/spider/cmd/protoc-gen-gotags/tagger;taggerb\x06proto3"
 
 var file_tagger_proto_goTypes = []any{
-	(*descriptorpb.FieldOptions)(nil), // 0: google.protobuf.FieldOptions
-	(*descriptorpb.OneofOptions)(nil), // 1: google.protobuf.OneofOptions
+	(*descriptorpb.MessageOptions)(nil), // 0: google.protobuf.MessageOptions
+	(*descriptorpb.FieldOptions)(nil),   // 1: google.protobuf.FieldOptions
+	(*descriptorpb.OneofOptions)(nil),   // 2: google.protobuf.OneofOptions
 }
 var file_tagger_proto_depIdxs = []int32{
-	0, // 0: spider.tagger.tags:extendee -> google.protobuf.FieldOptions
-	1, // 1: spider.tagger.oneof_tags:extendee -> google.protobuf.OneofOptions
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	0, // [0:2] is the sub-list for extension extendee
+	0, // 0: spider.tagger.disable_omitempty:extendee -> google.protobuf.MessageOptions
+	1, // 1: spider.tagger.tags:extendee -> google.protobuf.FieldOptions
+	2, // 2: spider.tagger.oneof_tags:extendee -> google.protobuf.OneofOptions
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	0, // [0:3] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
 }
 
@@ -91,7 +110,7 @@ func file_tagger_proto_init() {
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tagger_proto_rawDesc), len(file_tagger_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   0,
-			NumExtensions: 2,
+			NumExtensions: 3,
 			NumServices:   0,
 		},
 		GoTypes:           file_tagger_proto_goTypes,
