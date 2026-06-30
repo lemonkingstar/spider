@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.0
-// source: example.proto
+// source: example/example.proto
 
 package example
 
@@ -38,7 +38,7 @@ type Example struct {
 
 func (x *Example) Reset() {
 	*x = Example{}
-	mi := &file_example_proto_msgTypes[0]
+	mi := &file_example_example_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +50,7 @@ func (x *Example) String() string {
 func (*Example) ProtoMessage() {}
 
 func (x *Example) ProtoReflect() protoreflect.Message {
-	mi := &file_example_proto_msgTypes[0]
+	mi := &file_example_example_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +63,7 @@ func (x *Example) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Example.ProtoReflect.Descriptor instead.
 func (*Example) Descriptor() ([]byte, []int) {
-	return file_example_proto_rawDescGZIP(), []int{0}
+	return file_example_example_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Example) GetWithNewTags() string {
@@ -139,7 +139,7 @@ type SecondMessage struct {
 
 func (x *SecondMessage) Reset() {
 	*x = SecondMessage{}
-	mi := &file_example_proto_msgTypes[1]
+	mi := &file_example_example_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -151,7 +151,7 @@ func (x *SecondMessage) String() string {
 func (*SecondMessage) ProtoMessage() {}
 
 func (x *SecondMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_example_proto_msgTypes[1]
+	mi := &file_example_example_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -164,7 +164,7 @@ func (x *SecondMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SecondMessage.ProtoReflect.Descriptor instead.
 func (*SecondMessage) Descriptor() ([]byte, []int) {
-	return file_example_proto_rawDescGZIP(), []int{1}
+	return file_example_example_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SecondMessage) GetWithNewTags() string {
@@ -197,7 +197,7 @@ type ThirdExample struct {
 
 func (x *ThirdExample) Reset() {
 	*x = ThirdExample{}
-	mi := &file_example_proto_msgTypes[2]
+	mi := &file_example_example_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -209,7 +209,7 @@ func (x *ThirdExample) String() string {
 func (*ThirdExample) ProtoMessage() {}
 
 func (x *ThirdExample) ProtoReflect() protoreflect.Message {
-	mi := &file_example_proto_msgTypes[2]
+	mi := &file_example_example_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -222,7 +222,7 @@ func (x *ThirdExample) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdExample.ProtoReflect.Descriptor instead.
 func (*ThirdExample) Descriptor() ([]byte, []int) {
-	return file_example_proto_rawDescGZIP(), []int{2}
+	return file_example_example_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ThirdExample) GetInnerExample() *ThirdExample_InnerExample {
@@ -231,6 +231,112 @@ func (x *ThirdExample) GetInnerExample() *ThirdExample_InnerExample {
 	}
 	return nil
 }
+
+type FourthExample struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	WithNewTags     string                 `protobuf:"bytes,1,opt,name=with_new_tags,json=withNewTags,proto3" json:"with_new_tags"`
+	WithNewMultiple string                 `protobuf:"bytes,2,opt,name=with_new_multiple,json=withNewMultiple,proto3" json:"with_new_multiple,optional" graphql:"withNewTags,optional"`
+	ReplaceDefault  *string                `protobuf:"bytes,3,opt,name=replace_default,json=replaceDefault,proto3,oneof" json:"replacePrevious"`
+	// Types that are valid to be assigned to OneOf:
+	//
+	//	*FourthExample_A
+	//	*FourthExample_BJk
+	OneOf         isFourthExample_OneOf `protobuf_oneof:"one_of"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FourthExample) Reset() {
+	*x = FourthExample{}
+	mi := &file_example_example_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FourthExample) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FourthExample) ProtoMessage() {}
+
+func (x *FourthExample) ProtoReflect() protoreflect.Message {
+	mi := &file_example_example_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FourthExample.ProtoReflect.Descriptor instead.
+func (*FourthExample) Descriptor() ([]byte, []int) {
+	return file_example_example_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *FourthExample) GetWithNewTags() string {
+	if x != nil {
+		return x.WithNewTags
+	}
+	return ""
+}
+
+func (x *FourthExample) GetWithNewMultiple() string {
+	if x != nil {
+		return x.WithNewMultiple
+	}
+	return ""
+}
+
+func (x *FourthExample) GetReplaceDefault() string {
+	if x != nil && x.ReplaceDefault != nil {
+		return *x.ReplaceDefault
+	}
+	return ""
+}
+
+func (x *FourthExample) GetOneOf() isFourthExample_OneOf {
+	if x != nil {
+		return x.OneOf
+	}
+	return nil
+}
+
+func (x *FourthExample) GetA() string {
+	if x != nil {
+		if x, ok := x.OneOf.(*FourthExample_A); ok {
+			return x.A
+		}
+	}
+	return ""
+}
+
+func (x *FourthExample) GetBJk() int32 {
+	if x != nil {
+		if x, ok := x.OneOf.(*FourthExample_BJk); ok {
+			return x.BJk
+		}
+	}
+	return 0
+}
+
+type isFourthExample_OneOf interface {
+	isFourthExample_OneOf()
+}
+
+type FourthExample_A struct {
+	A string `protobuf:"bytes,5,opt,name=a,proto3,oneof"`
+}
+
+type FourthExample_BJk struct {
+	BJk int32 `protobuf:"varint,6,opt,name=b_jk,json=bJk,proto3,oneof"`
+}
+
+func (*FourthExample_A) isFourthExample_OneOf() {}
+
+func (*FourthExample_BJk) isFourthExample_OneOf() {}
 
 type ThirdExample_InnerExample struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -242,7 +348,7 @@ type ThirdExample_InnerExample struct {
 
 func (x *ThirdExample_InnerExample) Reset() {
 	*x = ThirdExample_InnerExample{}
-	mi := &file_example_proto_msgTypes[3]
+	mi := &file_example_example_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -254,7 +360,7 @@ func (x *ThirdExample_InnerExample) String() string {
 func (*ThirdExample_InnerExample) ProtoMessage() {}
 
 func (x *ThirdExample_InnerExample) ProtoReflect() protoreflect.Message {
-	mi := &file_example_proto_msgTypes[3]
+	mi := &file_example_example_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -267,7 +373,7 @@ func (x *ThirdExample_InnerExample) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ThirdExample_InnerExample.ProtoReflect.Descriptor instead.
 func (*ThirdExample_InnerExample) Descriptor() ([]byte, []int) {
-	return file_example_proto_rawDescGZIP(), []int{2, 0}
+	return file_example_example_proto_rawDescGZIP(), []int{2, 0}
 }
 
 func (x *ThirdExample_InnerExample) GetId() string {
@@ -284,11 +390,11 @@ func (x *ThirdExample_InnerExample) GetYes() int32 {
 	return 0
 }
 
-var File_example_proto protoreflect.FileDescriptor
+var File_example_example_proto protoreflect.FileDescriptor
 
-const file_example_proto_rawDesc = "" +
+const file_example_example_proto_rawDesc = "" +
 	"\n" +
-	"\rexample.proto\x12\aexample\x1a\x13tagger/tagger.proto\"\x98\x03\n" +
+	"\x15example/example.proto\x12\aexample\x1a\x13tagger/tagger.proto\"\x98\x03\n" +
 	"\aExample\x12E\n" +
 	"\rwith_new_tags\x18\x01 \x01(\tB!\x9a\xa8\x86\a\x1cgraphql:withNewTags,optionalR\vwithNewTags\x12e\n" +
 	"\x11with_new_multiple\x18\x02 \x01(\tB9\x9a\xa8\x86\a\x1cgraphql:withNewTags,optional\x9a\xa8\x86\a\x13xml:multi,omitemptyR\x0fwithNewMultiple\x12G\n" +
@@ -306,29 +412,38 @@ const file_example_proto_rawDesc = "" +
 	"json:innerR\finnerExample\x1aM\n" +
 	"\fInnerExample\x12\x1d\n" +
 	"\x02id\x18\x01 \x01(\tB\r\x9a\xa8\x86\a\bjson:yesR\x02id\x12\x1e\n" +
-	"\x03yes\x18\x02 \x01(\x05B\f\x9a\xa8\x86\a\ajson:idR\x03yesBGZEgithub.com/lemonkingstar/spider/cmd/protoc-gen-gotags/example;exampleb\x06proto3"
+	"\x03yes\x18\x02 \x01(\x05B\f\x9a\xa8\x86\a\ajson:idR\x03yes\"\xb9\x02\n" +
+	"\rFourthExample\x12\"\n" +
+	"\rwith_new_tags\x18\x01 \x01(\tR\vwithNewTags\x12q\n" +
+	"\x11with_new_multiple\x18\x02 \x01(\tBE\x9a\xa8\x86\a\x1cgraphql:withNewTags,optional\x9a\xa8\x86\a\x1fjson:with_new_multiple,optionalR\x0fwithNewMultiple\x12G\n" +
+	"\x0freplace_default\x18\x03 \x01(\tB\x19\x9a\xa8\x86\a\x14json:replacePreviousH\x01R\x0ereplaceDefault\x88\x01\x01\x12\x0e\n" +
+	"\x01a\x18\x05 \x01(\tH\x00R\x01a\x12\x13\n" +
+	"\x04b_jk\x18\x06 \x01(\x05H\x00R\x03bJk:\x05\x98\xa8\x86\a\x01B\b\n" +
+	"\x06one_ofB\x12\n" +
+	"\x10_replace_defaultBGZEgithub.com/lemonkingstar/spider/cmd/protoc-gen-gotags/example;exampleb\x06proto3"
 
 var (
-	file_example_proto_rawDescOnce sync.Once
-	file_example_proto_rawDescData []byte
+	file_example_example_proto_rawDescOnce sync.Once
+	file_example_example_proto_rawDescData []byte
 )
 
-func file_example_proto_rawDescGZIP() []byte {
-	file_example_proto_rawDescOnce.Do(func() {
-		file_example_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_example_proto_rawDesc), len(file_example_proto_rawDesc)))
+func file_example_example_proto_rawDescGZIP() []byte {
+	file_example_example_proto_rawDescOnce.Do(func() {
+		file_example_example_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_example_example_proto_rawDesc), len(file_example_example_proto_rawDesc)))
 	})
-	return file_example_proto_rawDescData
+	return file_example_example_proto_rawDescData
 }
 
-var file_example_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_example_proto_goTypes = []any{
+var file_example_example_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_example_example_proto_goTypes = []any{
 	(*Example)(nil),                   // 0: example.Example
 	(*SecondMessage)(nil),             // 1: example.SecondMessage
 	(*ThirdExample)(nil),              // 2: example.ThirdExample
-	(*ThirdExample_InnerExample)(nil), // 3: example.ThirdExample.InnerExample
+	(*FourthExample)(nil),             // 3: example.FourthExample
+	(*ThirdExample_InnerExample)(nil), // 4: example.ThirdExample.InnerExample
 }
-var file_example_proto_depIdxs = []int32{
-	3, // 0: example.ThirdExample.inner_example:type_name -> example.ThirdExample.InnerExample
+var file_example_example_proto_depIdxs = []int32{
+	4, // 0: example.ThirdExample.inner_example:type_name -> example.ThirdExample.InnerExample
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
@@ -336,30 +451,34 @@ var file_example_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_example_proto_init() }
-func file_example_proto_init() {
-	if File_example_proto != nil {
+func init() { file_example_example_proto_init() }
+func file_example_example_proto_init() {
+	if File_example_example_proto != nil {
 		return
 	}
-	file_example_proto_msgTypes[0].OneofWrappers = []any{
+	file_example_example_proto_msgTypes[0].OneofWrappers = []any{
 		(*Example_A)(nil),
 		(*Example_BJk)(nil),
+	}
+	file_example_example_proto_msgTypes[3].OneofWrappers = []any{
+		(*FourthExample_A)(nil),
+		(*FourthExample_BJk)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_example_proto_rawDesc), len(file_example_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_example_example_proto_rawDesc), len(file_example_example_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_example_proto_goTypes,
-		DependencyIndexes: file_example_proto_depIdxs,
-		MessageInfos:      file_example_proto_msgTypes,
+		GoTypes:           file_example_example_proto_goTypes,
+		DependencyIndexes: file_example_example_proto_depIdxs,
+		MessageInfos:      file_example_example_proto_msgTypes,
 	}.Build()
-	File_example_proto = out.File
-	file_example_proto_goTypes = nil
-	file_example_proto_depIdxs = nil
+	File_example_example_proto = out.File
+	file_example_example_proto_goTypes = nil
+	file_example_example_proto_depIdxs = nil
 }

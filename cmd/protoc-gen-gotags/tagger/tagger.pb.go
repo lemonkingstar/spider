@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.0
-// source: tagger.proto
+// source: tagger/tagger.proto
 
 package tagger
 
@@ -21,14 +21,14 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-var file_tagger_proto_extTypes = []protoimpl.ExtensionInfo{
+var file_tagger_tagger_proto_extTypes = []protoimpl.ExtensionInfo{
 	{
 		ExtendedType:  (*descriptorpb.MessageOptions)(nil),
 		ExtensionType: (*bool)(nil),
 		Field:         1847939,
 		Name:          "spider.tagger.disable_omitempty",
 		Tag:           "varint,1847939,opt,name=disable_omitempty",
-		Filename:      "tagger.proto",
+		Filename:      "tagger/tagger.proto",
 	},
 	{
 		ExtendedType:  (*descriptorpb.FieldOptions)(nil),
@@ -36,7 +36,7 @@ var file_tagger_proto_extTypes = []protoimpl.ExtensionInfo{
 		Field:         1847939,
 		Name:          "spider.tagger.tags",
 		Tag:           "bytes,1847939,rep,name=tags",
-		Filename:      "tagger.proto",
+		Filename:      "tagger/tagger.proto",
 	},
 	{
 		ExtendedType:  (*descriptorpb.OneofOptions)(nil),
@@ -44,7 +44,7 @@ var file_tagger_proto_extTypes = []protoimpl.ExtensionInfo{
 		Field:         1847939,
 		Name:          "spider.tagger.oneof_tags",
 		Tag:           "bytes,1847939,rep,name=oneof_tags",
-		Filename:      "tagger.proto",
+		Filename:      "tagger/tagger.proto",
 	},
 }
 
@@ -53,7 +53,7 @@ var (
 	// Disable json omitempty.
 	//
 	// optional bool disable_omitempty = 1847939;
-	E_DisableOmitempty = &file_tagger_proto_extTypes[0]
+	E_DisableOmitempty = &file_tagger_tagger_proto_extTypes[0]
 )
 
 // Extension fields to descriptorpb.FieldOptions.
@@ -61,7 +61,7 @@ var (
 	// Multiple Tags can be specified.
 	//
 	// repeated string tags = 1847939;
-	E_Tags = &file_tagger_proto_extTypes[1]
+	E_Tags = &file_tagger_tagger_proto_extTypes[1]
 )
 
 // Extension fields to descriptorpb.OneofOptions.
@@ -69,25 +69,25 @@ var (
 	// Multiple Tags can be specified.
 	//
 	// repeated string oneof_tags = 1847939;
-	E_OneofTags = &file_tagger_proto_extTypes[2]
+	E_OneofTags = &file_tagger_tagger_proto_extTypes[2]
 )
 
-var File_tagger_proto protoreflect.FileDescriptor
+var File_tagger_tagger_proto protoreflect.FileDescriptor
 
-const file_tagger_proto_rawDesc = "" +
+const file_tagger_tagger_proto_rawDesc = "" +
 	"\n" +
-	"\ftagger.proto\x12\rspider.tagger\x1a google/protobuf/descriptor.proto:N\n" +
+	"\x13tagger/tagger.proto\x12\rspider.tagger\x1a google/protobuf/descriptor.proto:N\n" +
 	"\x11disable_omitempty\x12\x1f.google.protobuf.MessageOptions\x18\x83\xe5p \x01(\bR\x10disableOmitempty:3\n" +
 	"\x04tags\x12\x1d.google.protobuf.FieldOptions\x18\x83\xe5p \x03(\tR\x04tags:>\n" +
 	"\n" +
 	"oneof_tags\x12\x1d.google.protobuf.OneofOptions\x18\x83\xe5p \x03(\tR\toneofTagsBEZCgithub.com/lemonkingstar/spider/cmd/protoc-gen-gotags/tagger;taggerb\x06proto3"
 
-var file_tagger_proto_goTypes = []any{
+var file_tagger_tagger_proto_goTypes = []any{
 	(*descriptorpb.MessageOptions)(nil), // 0: google.protobuf.MessageOptions
 	(*descriptorpb.FieldOptions)(nil),   // 1: google.protobuf.FieldOptions
 	(*descriptorpb.OneofOptions)(nil),   // 2: google.protobuf.OneofOptions
 }
-var file_tagger_proto_depIdxs = []int32{
+var file_tagger_tagger_proto_depIdxs = []int32{
 	0, // 0: spider.tagger.disable_omitempty:extendee -> google.protobuf.MessageOptions
 	1, // 1: spider.tagger.tags:extendee -> google.protobuf.FieldOptions
 	2, // 2: spider.tagger.oneof_tags:extendee -> google.protobuf.OneofOptions
@@ -98,26 +98,26 @@ var file_tagger_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_tagger_proto_init() }
-func file_tagger_proto_init() {
-	if File_tagger_proto != nil {
+func init() { file_tagger_tagger_proto_init() }
+func file_tagger_tagger_proto_init() {
+	if File_tagger_tagger_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tagger_proto_rawDesc), len(file_tagger_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_tagger_tagger_proto_rawDesc), len(file_tagger_tagger_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   0,
 			NumExtensions: 3,
 			NumServices:   0,
 		},
-		GoTypes:           file_tagger_proto_goTypes,
-		DependencyIndexes: file_tagger_proto_depIdxs,
-		ExtensionInfos:    file_tagger_proto_extTypes,
+		GoTypes:           file_tagger_tagger_proto_goTypes,
+		DependencyIndexes: file_tagger_tagger_proto_depIdxs,
+		ExtensionInfos:    file_tagger_tagger_proto_extTypes,
 	}.Build()
-	File_tagger_proto = out.File
-	file_tagger_proto_goTypes = nil
-	file_tagger_proto_depIdxs = nil
+	File_tagger_tagger_proto = out.File
+	file_tagger_tagger_proto_goTypes = nil
+	file_tagger_tagger_proto_depIdxs = nil
 }
