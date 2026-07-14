@@ -152,10 +152,13 @@ func (f *stdFormatter) build() {
 	f.formatDateCode = "%d" + obfuscatedCode + "%"
 	f.formatCallerCode = "%l" + obfuscatedCode + "%"
 	f.formatMessageCode = "%m" + obfuscatedCode + "%"
-	f.formatContent = strings.ReplaceAll(f.LogFormat, "%p", f.formatLevelCode)
-	f.formatContent = strings.ReplaceAll(f.formatContent, "%d", f.formatDateCode)
-	f.formatContent = strings.ReplaceAll(f.formatContent, "%l", f.formatCallerCode)
-	f.formatContent = strings.ReplaceAll(f.formatContent, "%m", f.formatMessageCode)
+
+	var pairs []string
+	pairs = append(pairs, "%p", f.formatLevelCode)
+	pairs = append(pairs, "%d", f.formatDateCode)
+	pairs = append(pairs, "%l", f.formatCallerCode)
+	pairs = append(pairs, "%m", f.formatMessageCode)
+	f.formatContent = strings.NewReplacer(pairs...).Replace(f.LogFormat)
 }
 
 type rotateFileHook struct {
