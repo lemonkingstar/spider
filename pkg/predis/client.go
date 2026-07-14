@@ -251,7 +251,7 @@ func (c *client) Unlock(ctx context.Context, key string) (err error) {
 
 // LockUntil redis设置超时锁
 // usage:
-// b, _ := client.Lock(ctx, lockKey, time.Minute);
+// b, _ := client.LockUntil(ctx, lockKey, time.Minute);
 // defer client.Unlock(ctx, lockKey) // 如果需要在指定时间内都不想要执行业务逻辑，也可以不主动释放，待自动释放即可
 func (c *client) LockUntil(ctx context.Context, key string, expiration time.Duration) (locked bool, err error) {
 	locked, err = c.SetNX(ctx, key, time.Now(), expiration).Result()
